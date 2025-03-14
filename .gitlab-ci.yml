@@ -1,0 +1,29 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0
+
+stages:
+  - restore
+  - build
+#  - test
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+  PROJECT_PATH: "Sources/Shizima.WebAPI"
+
+before_script:
+  - dotnet --version
+
+build:
+  stage: build
+  script:
+    - dotnet restore $PROJECT_PATH
+    - dotnet build $PROJECT_PATH --no-restore
+
+#test:
+#  stage: test
+#  script:
+#    - dotnet test $PROJECT_PATH --configuration Release --no-build --logger trx
+#  artifacts:
+#    when: always
+#    reports:
+#      junit: "**/TestResults/*.trx"
