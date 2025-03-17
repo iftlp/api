@@ -1,6 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.WebAPI", "Shizima.WebAPI\Shizima.WebAPI.csproj", "{FB73B736-421A-49FD-9A27-B3F87B88F464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.Providers", "Shizima.Providers\Shizima.Providers.csproj", "{E4BE0D10-DD9A-4A8B-BF31-A88819549602}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{F92DA241-FDA1-4F1E-9B88-C153C82C833B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.Entities", "Shizima.Entities\Shizima.Entities.csproj", "{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +21,20 @@ Global
 		{FB73B736-421A-49FD-9A27-B3F87B88F464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB73B736-421A-49FD-9A27-B3F87B88F464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB73B736-421A-49FD-9A27-B3F87B88F464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4BE0D10-DD9A-4A8B-BF31-A88819549602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4BE0D10-DD9A-4A8B-BF31-A88819549602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4BE0D10-DD9A-4A8B-BF31-A88819549602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4BE0D10-DD9A-4A8B-BF31-A88819549602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E4BE0D10-DD9A-4A8B-BF31-A88819549602} = {F92DA241-FDA1-4F1E-9B88-C153C82C833B}
+		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A} = {F92DA241-FDA1-4F1E-9B88-C153C82C833B}
 	EndGlobalSection
 EndGlobal
