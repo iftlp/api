@@ -1,6 +1,0 @@
-@Shizima.WebAPI_HostAddress = http://localhost:5049
-
-GET {{Shizima.WebAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
