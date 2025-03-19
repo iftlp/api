@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.WebAPI", "Shizima.WebAPI\Shizima.WebAPI.csproj", "{FB73B736-421A-49FD-9A27-B3F87B88F464}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{F92DA241-FDA1-4F1E-9B88-C153C82C833B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.Entities", "Shizima.Entities\Shizima.Entities.csproj", "{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.Business", "Shizima.Business\Shizima.Business.csproj", "{4725AE0D-8B4B-4A32-AAB5-1000443F554C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shizima.Dtos", "Shizima.Dtos\Shizima.Dtos.csproj", "{595A9C65-24D4-4348-8394-C80E9030DCA9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{E35BE94B-262D-4EDA-8EFC-9CF942019BBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +35,14 @@ Global
 		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4725AE0D-8B4B-4A32-AAB5-1000443F554C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4725AE0D-8B4B-4A32-AAB5-1000443F554C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4725AE0D-8B4B-4A32-AAB5-1000443F554C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4725AE0D-8B4B-4A32-AAB5-1000443F554C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{595A9C65-24D4-4348-8394-C80E9030DCA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{595A9C65-24D4-4348-8394-C80E9030DCA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{595A9C65-24D4-4348-8394-C80E9030DCA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{595A9C65-24D4-4348-8394-C80E9030DCA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,5 +50,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E4BE0D10-DD9A-4A8B-BF31-A88819549602} = {F92DA241-FDA1-4F1E-9B88-C153C82C833B}
 		{0AAAC514-A16F-40BE-A54F-4FB0E6335C4A} = {F92DA241-FDA1-4F1E-9B88-C153C82C833B}
+		{4725AE0D-8B4B-4A32-AAB5-1000443F554C} = {E35BE94B-262D-4EDA-8EFC-9CF942019BBE}
+		{595A9C65-24D4-4348-8394-C80E9030DCA9} = {E35BE94B-262D-4EDA-8EFC-9CF942019BBE}
 	EndGlobalSection
 EndGlobal
