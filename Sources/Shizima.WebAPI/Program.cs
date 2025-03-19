@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Shizima.Business.Services;
 using Shizima.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString, m => m.MigrationsAssembly("Shizima.WebAPI")));
 
 builder.Services.AddTransient<UnitOfWork>();
+builder.Services.AddTransient<MusicService>();
 
 builder.Services.AddCors(options => options.AddPolicy(name: corsPolicy, builder =>
 {
@@ -21,6 +24,12 @@ builder.Services.AddCors(options => options.AddPolicy(name: corsPolicy, builder 
            .AllowAnyMethod()
            .AllowAnyHeader();
 }));
+
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddConfiguration(builder.Configuration.GetSection("Logging"))
+                .AddSerilog(new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).Enrich.FromLogContext().CreateLogger());
+});
 
 var app = builder.Build();
 

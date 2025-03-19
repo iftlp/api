@@ -7,7 +7,12 @@ namespace Shizima.Entities
         /// <summary>
         /// Gets or sets the artist's name.
         /// </summary>
-        [Required, MaxLength(64)]
-        public string Name { get; set; }
+        [Required, MaxLength(100)]
+        public required string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the artist's albums.
+        /// </summary>
+        public ICollection<Album>? Albums { get; set; }
     }
 }

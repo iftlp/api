@@ -11,6 +11,10 @@
 */.idea/*
 .idea/*
 
+**/Logs/*
+*/Logs/*
+Logs/*
+
 # User-specific files
 *.rsuser
 *.suo
