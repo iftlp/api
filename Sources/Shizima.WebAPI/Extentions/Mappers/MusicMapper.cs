@@ -15,8 +15,7 @@ namespace Shizima.Business.Mappers
             return new MusicDto
             {
                 Id = music.Id,
-                Title = music.Title,
-                Cover = music.Cover
+                Title = music.Title
             };
         }
 
@@ -40,8 +39,7 @@ namespace Shizima.Business.Mappers
             return new Music
             {
                 Id = musicDto.Id,
-                Title = musicDto.Title,
-                Cover = musicDto.Cover
+                Title = musicDto.Title
             };
         }
 

@@ -1,11 +1,15 @@
 stages:
   - build
   - sonarqube-check
+  - docker-push
 
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: 1
   PROJECT_PATH: "Sources/Shizima.WebAPI"
+  IMAGE_NAME: "axdelafuen/shizima_webapi"
+  IMAGE_TAG: "latest"
+  CI_REGISTRY: "docker.isima.fr"
 
 before_script:
   - dotnet --version
@@ -43,5 +47,18 @@ sonarqube-check:
       - "dotnet build"
       - "dotnet sonarscanner end /d:sonar.login=\"$SONAR_TOKEN\""
   allow_failure: true
+  only:
+    - master
+
+docker-push:
+  before_script: []
+  image: docker:latest
+  stage: docker-push
+  services:
+    - docker:dind
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login $CI_REGISTRY -u $DOCKER_USERNAME --password-stdin
+    - docker build -f $PROJECT_PATH/Dockerfile -t $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG ./Sources
+    - docker push $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
   only:
     - master

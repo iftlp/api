@@ -11,8 +11,8 @@ namespace Shizima.Entities
         public required string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the artist's albums.
+        /// Gets or sets the artist's musics.
         /// </summary>
-        public ICollection<Album>? Albums { get; set; }
+        public ICollection<Music>? Musics { get; set; }
     }
 }
