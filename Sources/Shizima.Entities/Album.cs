@@ -14,12 +14,7 @@ namespace Shizima.Entities
         /// Gets or sets the album's cover.
         /// </summary>
         public string? Cover { get; set; }
-
-        /// <summary>
-        /// Gets or sets the album's artists.
-        /// </summary>
-        public ICollection<Artist>? Artists { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the album's musics.
         /// </summary>

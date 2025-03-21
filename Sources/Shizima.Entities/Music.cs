@@ -11,18 +11,24 @@ namespace Shizima.Entities
         public required string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets the music's cover.
-        /// </summary>
-        public string? Cover { get; set; }
-
-        /// <summary>
         /// Gets or sets the music's album id.
         /// </summary>
+        [Required]
         public long AlbumId { get; set; }
 
         /// <summary>
         /// Gets or sets the music's album.
         /// </summary>
         public Album? Album { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the music's artists.
+        /// </summary>
+        public ICollection<Artist>? Artists { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the music's histories.
+        /// </summary>
+        public ICollection<History>? Histories { get; set; }
     }
 }
