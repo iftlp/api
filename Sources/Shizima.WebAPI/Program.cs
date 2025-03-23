@@ -40,7 +40,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+/*
+ * This API is currently deploy in a container.
+ * https is handle outside of it. (Through traefik)
+ *
+ * Therefore, HTTPS redirection within the application is unnecessary and should remain disabled.
+ * Add `app.UseHttpsRedirection();` only if HTTPS is handled directly within the application.
+ */
 
 app.UseAuthorization();
 
