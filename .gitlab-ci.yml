@@ -10,9 +10,12 @@ variables:
   IMAGE_NAME: "axdelafuen/shizima_webapi"
   IMAGE_TAG: "latest"
   CI_REGISTRY: "docker.isima.fr"
+  NUGET_FEED_URL: "https://gitlab.isima.fr/api/v4/groups/11770/-/packages/nuget/index.json"
+  NUGET_FEED_NAME: "gitlab.isima"
 
 before_script:
   - dotnet --version
+  - dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
 
 build:
   image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -20,10 +23,6 @@ build:
   script:
     - dotnet restore $PROJECT_PATH
     - dotnet build $PROJECT_PATH --no-restore
-  artifacts:
-    paths:
-      - ./output
-    expire_in: 1 hour
 
 sonarqube-check:
   image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -58,7 +57,7 @@ docker-push:
     - docker:dind
   script:
     - echo "$DOCKER_PASSWORD" | docker login $CI_REGISTRY -u $DOCKER_USERNAME --password-stdin
-    - docker build -f $PROJECT_PATH/Dockerfile -t $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG ./Sources
+    - docker build -f $PROJECT_PATH/Dockerfile -t $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --build-arg CI_JOB_TOKEN=${CI_JOB_TOKEN} ./Sources
     - docker push $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
   only:
     - master

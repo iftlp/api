@@ -6,12 +6,17 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG NUGET_FEED_URL="https://gitlab.isima.fr/api/v4/groups/11770/-/packages/nuget/index.json"
+ARG NUGET_FEED_NAME="gitlab.isima"
+ARG CI_JOB_TOKEN
+
 WORKDIR /src
 COPY ["Shizima.WebAPI/Shizima.WebAPI.csproj", "Shizima.WebAPI/"]
 COPY ["Shizima.Providers/Shizima.Providers.csproj", "Shizima.Providers/"]
 COPY ["Shizima.Entities/Shizima.Entities.csproj", "Shizima.Entities/"]
 COPY ["Shizima.Business/Shizima.Business.csproj", "Shizima.Business/"]
 COPY ["Shizima.Dtos/Shizima.Dtos.csproj", "Shizima.Dtos/"]
+RUN dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
 RUN dotnet restore "Shizima.WebAPI/Shizima.WebAPI.csproj"
 COPY . .
 WORKDIR "/src/Shizima.WebAPI"
