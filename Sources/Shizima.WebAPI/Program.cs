@@ -32,7 +32,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-var tst = Environment.GetEnvironmentVariables();
 if (string.IsNullOrEmpty(connectionString))
 {
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -62,21 +61,16 @@ builder.Services.AddLogging(loggingBuilder =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+/*
+ *if (app.Environment.IsDevelopment())
+ *{
+ *    app.UseSwagger();
+ *    app.UseSwaggerUI();
+ *}
+ */
+
 app.UseSwagger();
 app.UseSwaggerUI();
-//}
-
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    
-    logger.LogInformation("ConnectionString: "+ connectionString);
-} 
-
 
 /*
  * This API is currently deploy in a container.
@@ -85,6 +79,7 @@ using (var scope = app.Services.CreateScope())
  * Therefore, HTTPS redirection within the application is unnecessary and should remain disabled.
  * Add `app.UseHttpsRedirection();` only if HTTPS is handled directly within the application.
  */
+
 if (app.Environment.IsProduction())
 {
     using (var scope = app.Services.CreateScope())
