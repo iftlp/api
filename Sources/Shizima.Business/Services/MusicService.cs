@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shizima.Business.Extensions.Collections;
 using Shizima.Entities;
 using Shizima.Providers;
 
@@ -20,7 +21,7 @@ namespace Shizima.Business.Services
         /// <summary>
         /// Error prefix for the service
         /// </summary>
-        private const String ERROR_PREFIX = "EXCEPTION.SERVICE.MUSIC.";
+        private const string ERROR_PREFIX = "EXCEPTION.SERVICE.MUSIC.";
 
         /// <summary>
         /// The music service constructor
@@ -29,7 +30,7 @@ namespace Shizima.Business.Services
         /// <param name="logger">The logger instance</param>
         public MusicService(UnitOfWork unitOfWork, ILogger<MusicService> logger)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(UnitOfWork)); ;
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger;
         }
 
@@ -38,10 +39,22 @@ namespace Shizima.Business.Services
         /// </summary>
         /// <param name="cancellationToken">The cancellationToken</param>
         /// <returns>The list of musics</returns>
-        public async Task<IEnumerable<Music>?> GetAllMusics(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Music>?> GetAllMusicsAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Getting every musics entry.");
             return await _unitOfWork.DbContext.Musics.ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets all musics paginated.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns>The list of musics</returns>
+        public async Task<PaginatedList<Music>?> GetAllMusicsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Getting every musics entry.");
+            var musics = await _unitOfWork.DbContext.Musics.ToListAsync(cancellationToken);
+            return musics.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
         }
 
         /// <summary>
@@ -55,6 +68,11 @@ namespace Shizima.Business.Services
             _logger.LogInformation("Try to create music {Id}", music.Id);
             await _unitOfWork.DbContext.AddAsync(music, cancellationToken);
             var result = await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
+            if (result == 0)
+            {
+                _logger.LogError(ERROR_PREFIX + "CREATION: The music creation for {Id} failed.", music.Id);
+                throw new ArgumentException($"{ERROR_PREFIX}.CREATION: The music creation for {music.Id} failed.");
+            }
             _logger.LogInformation("Success to create music {Id}", music.Id);
             return result;
         }

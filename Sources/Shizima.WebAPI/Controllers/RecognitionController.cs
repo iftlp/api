@@ -7,7 +7,7 @@ namespace Shizima.WebAPI.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public class RecognitionController
+    public class RecognitionController : Controller
     {
         public RecognitionController() 
         {
@@ -28,7 +28,7 @@ namespace Shizima.WebAPI.Controllers
             {
                 debug = false;
             }
-            return debug ? new NotFoundResult() : new OkResult();
+            return debug ? new NotFoundObjectResult(debug) : new OkObjectResult(debug);
         }
     }
 }

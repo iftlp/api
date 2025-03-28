@@ -1,10 +1,29 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Shizima.Business.Services;
 using Shizima.Providers;
+using Shizima.WebAPI.Authentication;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var corsPolicy = "corsPolicy";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+        };
+    });
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -16,7 +35,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString, m => m.MigrationsAssembly("Shizima.WebAPI")));
 
 builder.Services.AddTransient<UnitOfWork>();
+builder.Services.AddTransient<TokenProvider>();
 builder.Services.AddTransient<MusicService>();
+builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<AdministratorService>();
 
 builder.Services.AddCors(options => options.AddPolicy(name: corsPolicy, builder =>
 {
@@ -34,11 +56,11 @@ builder.Services.AddLogging(loggingBuilder =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 /*
  * This API is currently deploy in a container.
@@ -48,6 +70,7 @@ if (app.Environment.IsDevelopment())
  * Add `app.UseHttpsRedirection();` only if HTTPS is handled directly within the application.
  */
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -15,7 +15,8 @@ namespace Shizima.Business.Mappers
             return new MusicDto
             {
                 Id = music.Id,
-                Title = music.Title
+                Title = music.Title,
+                Album = music.Album?.ToDto(),
             };
         }
 
@@ -24,9 +25,9 @@ namespace Shizima.Business.Mappers
         /// </summary>
         /// <param name="musics">List of music entities</param>
         /// <returns>The mapped list of music dtos</returns>
-        public static IEnumerable<MusicDto> ToDto(this IEnumerable<Music> musics)
+        public static IEnumerable<MusicDto> ToDto(this IEnumerable<Music>? musics)
         {
-            return musics.Select(ToDto) ?? Enumerable.Empty<MusicDto>();
+            return musics?.Select(ToDto) ?? Enumerable.Empty<MusicDto>();
         }
 
         /// <summary>
@@ -39,7 +40,8 @@ namespace Shizima.Business.Mappers
             return new Music
             {
                 Id = musicDto.Id,
-                Title = musicDto.Title
+                Title = musicDto.Title,
+                AlbumId = musicDto.Album?.Id ?? -1
             };
         }
 

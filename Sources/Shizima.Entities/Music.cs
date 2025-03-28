@@ -14,7 +14,7 @@ namespace Shizima.Entities
         /// Gets or sets the music's album id.
         /// </summary>
         [Required]
-        public long AlbumId { get; set; }
+        public required long AlbumId { get; set; }
 
         /// <summary>
         /// Gets or sets the music's album.
