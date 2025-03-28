@@ -74,6 +74,24 @@ app.UseSwaggerUI();
  * Therefore, HTTPS redirection within the application is unnecessary and should remain disabled.
  * Add `app.UseHttpsRedirection();` only if HTTPS is handled directly within the application.
  */
+if (app.Environment.IsProduction())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        try
+        {
+            var dbContext = services.GetRequiredService<DbContext>();
+            dbContext.Database.Migrate();
+            logger.LogInformation("Migrating database ...");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while migrating the database.");
+        }
+    } 
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
