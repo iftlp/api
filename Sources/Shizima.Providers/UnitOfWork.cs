@@ -10,7 +10,7 @@ namespace Shizima.Providers
         /// <summary>
         /// Database context used for managing entity changes.
         /// </summary>
-        private DatabaseContext _dbContext;
+        private readonly DatabaseContext _dbContext;
 
         /// <summary>
         /// Gets the current database context.

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security;
 
 namespace Shizima.Entities
 {
@@ -7,8 +8,7 @@ namespace Shizima.Entities
         /// <summary>
         /// Gets or sets the user's token.
         /// </summary>
-        [Required, MaxLength(100)]
-        public required string Token { get; set; }
+        public string? Token { get; set; }
         
         /// <summary>
         /// Gets or sets the user's histories.

@@ -13,6 +13,7 @@ namespace Shizima.Providers
         public DbSet<Music> Musics { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<History> Histories { get; set; }
+        public DbSet<Administrator> Administrators { get; set; }
         
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         { }
