@@ -16,6 +16,8 @@ COPY ["Shizima.Providers/Shizima.Providers.csproj", "Shizima.Providers/"]
 COPY ["Shizima.Entities/Shizima.Entities.csproj", "Shizima.Entities/"]
 COPY ["Shizima.Business/Shizima.Business.csproj", "Shizima.Business/"]
 COPY ["Shizima.Dtos/Shizima.Dtos.csproj", "Shizima.Dtos/"]
+COPY ["Shizima.WebAPI/Migrations", "Shizima.WebAPI/Migrations"]
+
 RUN dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
 RUN dotnet restore "Shizima.WebAPI/Shizima.WebAPI.csproj"
 COPY . .
@@ -25,11 +27,12 @@ RUN dotnet build "Shizima.WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "Shizima.WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN mkdir -p /app/publish/Migrations
+COPY --from=build /src/Shizima.WebAPI/Migrations /app/publish/Migrations
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-ENV PATH="${PATH}:/root/.dotnet/tools"
+COPY --from=publish /app/publish/Migrations ./Migrations
 
 ENTRYPOINT ["dotnet", "Shizima.WebAPI.dll"]

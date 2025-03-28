@@ -82,7 +82,7 @@ if (app.Environment.IsProduction())
         var logger = services.GetRequiredService<ILogger<Program>>();
         try
         {
-            var dbContext = services.GetRequiredService<DbContext>();
+            var dbContext = services.GetRequiredService<DatabaseContext>();
             dbContext.Database.Migrate();
             logger.LogInformation("Migrating database ...");
         }
