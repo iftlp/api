@@ -32,6 +32,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+var tst = Environment.GetEnvironmentVariables();
 if (string.IsNullOrEmpty(connectionString))
 {
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -66,6 +67,16 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 //}
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    
+    logger.LogInformation("ConnectionString: "+ connectionString);
+} 
+
 
 /*
  * This API is currently deploy in a container.
