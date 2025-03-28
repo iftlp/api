@@ -29,4 +29,8 @@ RUN dotnet publish "Shizima.WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
 ENTRYPOINT ["dotnet", "Shizima.WebAPI.dll"]
