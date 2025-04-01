@@ -10,7 +10,6 @@ namespace Shizima.WebAPI.Extentions.Controller
         /// Generate header response with the desired paginated list
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
         /// <param name="controller"></param>
         /// <param name="entities">A paginated list of entities object</param>
         /// <returns></returns>
@@ -19,38 +18,41 @@ namespace Shizima.WebAPI.Extentions.Controller
             if (entities.TotalRecords == 0)
             {
                 controller.Response.StatusCode = StatusCodes.Status204NoContent;
+                controller.GeneratePaginatedHeaderTotal(entities);
             }
             else if (entities.HasNextPage)
             {
                 controller.Response.StatusCode = StatusCodes.Status206PartialContent;
+                controller.GeneratePaginatedHeader(entities);
             }
             else
             {
                 controller.Response.StatusCode = StatusCodes.Status200OK;
+                controller.GeneratePaginatedHeader(entities);
             }
             
-            controller.GeneratePaginatedHeader(entities);
             return entities.AsEnumerable();
         }
-
-        /// <summary>
-        /// Set response with the desire status and return the result object
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="controller"></param>
-        /// <param name="statusCode">Returned HTTP status code</param>
-        /// <param name="result">The object return in the body</param>
-        /// <returns></returns>
-        public static T ResponseWithStatus<T>(this ControllerBase controller, HttpStatusCode statusCode, T result = default)
-        {
-            controller.Response.StatusCode = (int)statusCode;
-            return result;
-        }
-
+        
         private static void GeneratePaginatedHeader<T>(this ControllerBase controller, PaginatedList<T> entities)
         {
+            controller.GeneratePaginatedHeaderIndex(entities);
+            controller.GeneratePaginatedHeaderSize(entities);
+            controller.GeneratePaginatedHeaderTotal(entities);
+        }
+        
+        private static void GeneratePaginatedHeaderIndex<T>(this ControllerBase controller, PaginatedList<T> entities)
+        {
             controller.Response.Headers.Append("x-pagination-index", entities.StartIndex.ToString());
+        }
+        
+        private static void GeneratePaginatedHeaderSize<T>(this ControllerBase controller, PaginatedList<T> entities)
+        {
             controller.Response.Headers.Append("x-pagination-size", (entities.EndIndex-entities.StartIndex+1).ToString());
+        }
+        
+        private static void GeneratePaginatedHeaderTotal<T>(this ControllerBase controller, PaginatedList<T> entities)
+        {
             controller.Response.Headers.Append("x-pagination-total", entities.TotalRecords.ToString());
         }
     }

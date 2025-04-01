@@ -32,11 +32,14 @@ namespace Shizima.WebAPI.Controllers
         /// <returns>The musics entries.</returns>
         [HttpGet("all", Name = "Get all music entries of the database.")]
         [ProducesResponseType<IEnumerable<MusicDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<MusicDto>>(StatusCodes.Status204NoContent)]
+        [ProducesResponseType<IEnumerable<MusicDto>>(StatusCodes.Status206PartialContent)]
+
         public async Task<ActionResult<IEnumerable<MusicDto>>> GetAllMusics([DefaultValue(0), FromQuery] int pageIndex = 0, [DefaultValue(20), FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
         {
             var musics = await _musicService.GetAllMusicsAsync(pageIndex, pageSize, cancellationToken);
 
-            return musics == null ? new NotFoundResult() : new OkObjectResult(this.PaginatedResult(musics.MapTo(MusicMapper.ToDto)));
+            return musics == null ? new NotFoundResult() : new ObjectResult(this.PaginatedResult(musics.MapTo(MusicMapper.ToDto)));
         }
 
         /// <summary>
