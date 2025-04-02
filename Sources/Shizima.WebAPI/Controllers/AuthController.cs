@@ -26,17 +26,23 @@ namespace Shizima.WebAPI.Controllers
         /// </summary>
         /// <param name="userIdentity">The administrator credentials (email/password).</param>
         /// <param name="cancellationToken">The cancellation token</param>
-        /// <returns></returns>
+        /// <returns>The Bearer token and it's expiration datetime (UTC)</returns>
         [HttpPost]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> GetToken([FromBody]UserIdentity userIdentity, CancellationToken cancellationToken = default)
         {
             if (!await _adminService.IsCredentialsAdminAsync(userIdentity.Email, userIdentity.Password, cancellationToken))
             {
-                return new UnauthorizedObjectResult("The gived token, is not related to an adminitrator account.");
+                return new UnauthorizedObjectResult("The given token, is not related to an administrator account.");
             }
-            string authToken = _tokenProvider.GenerateJwtToken(userIdentity.Email);
-            return new OkObjectResult(authToken);
+
+            var response = new TokenResponse
+            {
+                Token = _tokenProvider.GenerateJwtToken(userIdentity.Email),
+                Expires = DateTime.UtcNow.AddHours(1),
+            };
+             
+            return new OkObjectResult(response);
         }
     }
 }
