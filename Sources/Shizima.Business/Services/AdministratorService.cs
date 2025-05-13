@@ -40,7 +40,7 @@ namespace Shizima.Business.Services
         /// <param name="password">The administrator's password</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>True if a administrator exist. False otherwise.</returns>
-        public async Task<bool> IsCredentialsAdminAsync(string email, string password, CancellationToken cancellationToken)
+        public async Task IsCredentialsAdminAsync(string email, string password, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
@@ -51,13 +51,12 @@ namespace Shizima.Business.Services
             _logger.LogInformation("Try get administrator from email: {Email}.", email);
             var administrator = await _unitOfWork.DbContext.Administrators.Where(a => a.Email == email && 
                                                                                     a.Password == password
-                                                                                    ).FirstOrDefaultAsync();
+                                                                                    ).FirstOrDefaultAsync(cancellationToken);
             if (administrator == null)
             {
                 _logger.LogError("No administrator exist in database with email {Email}, and is admin.", email);
                 throw new ArgumentException($"{ERROR_PREFIX}AUTHENTICATION_FAILED: No administrator exist in database with email {email}.");
             }
-            return true;
         }
     }   
 }

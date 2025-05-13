@@ -23,11 +23,7 @@ namespace Shizima.WebAPI.Controllers
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
         public IActionResult RecoguenizeMusic([FromBody] IEnumerable<byte> data, CancellationToken cancellationToken = default)
         {
-            bool debug = true;
-            if (data.Count() > 1)
-            {
-                debug = false;
-            }
+            bool debug = !(data.Count() > 1);
             return debug ? new NotFoundObjectResult(debug) : new OkObjectResult(debug);
         }
     }

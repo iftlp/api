@@ -29,13 +29,17 @@ namespace Shizima.WebAPI.Controllers
         /// <returns>The Bearer token and it's expiration datetime (UTC)</returns>
         [HttpPost]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> GetToken([FromBody]UserIdentity userIdentity, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<string>> GetTokenAsync([FromBody]UserIdentity userIdentity, CancellationToken cancellationToken = default)
         {
-            if (!await _adminService.IsCredentialsAdminAsync(userIdentity.Email, userIdentity.Password, cancellationToken))
+            try
             {
-                return new UnauthorizedObjectResult("The given token, is not related to an administrator account.");
+                await _adminService.IsCredentialsAdminAsync(userIdentity.Email, userIdentity.Password, cancellationToken);
             }
-
+            catch (ArgumentException e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+            
             var response = new TokenResponse
             {
                 Token = _tokenProvider.GenerateJwtToken(userIdentity.Email),
