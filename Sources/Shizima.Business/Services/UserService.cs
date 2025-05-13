@@ -39,10 +39,10 @@ namespace Shizima.Business.Services
         /// <param name="userToken">The user token</param>
         /// <param name="cancellationToken">The cancellationToken</param>
         /// <returns>The number of entry created (1 or 0)</returns>
-        public async Task<int> CreateUserAsync(string userToken, CancellationToken cancellationToken)
+        public async Task CreateUserAsync(string userToken, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Check if a user with this token already exist : {UserToken}", userToken);
-            var userAlreadyPresent = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync();
+            var userAlreadyPresent = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
             if (userAlreadyPresent != null)
             {
                 _logger.LogError(ERROR_PREFIX + "CREATION: The user token: {UserToken} is already used.", userToken);
@@ -63,7 +63,34 @@ namespace Shizima.Business.Services
                 throw new ArgumentException($"{ERROR_PREFIX}CREATION: The user creation for {userToken} failed.");
             }
             _logger.LogInformation("Success to create user {UserToken}", userToken);
-            return result;
+        }
+
+        /// <summary>
+        /// Get the history of a user.
+        /// </summary>
+        /// <param name="userToken">The user token</param>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns>The history</returns>
+        public async Task<IEnumerable<History>> GetUserHistoryAsync(string userToken, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Try to get user history for {UserToken}", userToken);
+            
+            var user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
+            if (user == null)
+            {
+                _logger.LogError(ERROR_PREFIX + "GET_HISTORY: The user with token: {UserToken} doesn't exist.", userToken);
+                throw new ArgumentException($"{ERROR_PREFIX}GET_HISTORY: The user with token: {userToken} doesn't exist.");
+            }
+
+            var history = await _unitOfWork.DbContext.Histories.Where(h => h.UserId == user.Id).ToListAsync(cancellationToken);
+
+            if (history == null)
+            {
+                _logger.LogError(ERROR_PREFIX + "GET_HISTORY: The user with token: {UserToken} have no history.", userToken);
+                throw new ArgumentException($"{ERROR_PREFIX}GET_HISTORY: The user with token: {userToken} have no history.");
+            }
+            
+            return history;
         }
     }
 }

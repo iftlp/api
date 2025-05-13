@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Shizima.Business.Mappers;
 using Shizima.Business.Services;
+using Shizima.Dtos;
+using Shizima.Entities;
 using Shizima.WebAPI.Authentication;
 
 namespace Shizima.WebAPI.Controllers
@@ -26,10 +29,42 @@ namespace Shizima.WebAPI.Controllers
         /// <returns></returns>
         [HttpPost("{userToken}")]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult> CreateUser(string userToken, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> CreateUserAsync([FromRoute]string userToken, CancellationToken cancellationToken = default)
         {
-            var result = await _userService.CreateUserAsync(userToken, cancellationToken);
-            return result == 0 ? new BadRequestResult() : new OkResult();
+            try
+            {
+                await _userService.CreateUserAsync(userToken, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+            
+            return new OkResult();
+        }
+
+        /// <summary>
+        /// Get the history from user token.
+        /// </summary>
+        /// <param name="userToken">The token.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The history</returns>
+        [HttpGet("{userToken}/history")]
+        [ProducesResponseType<IEnumerable<HistoryDto>>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<HistoryDto>>> GetUserHistoryAsync(string userToken, CancellationToken cancellationToken = default)
+        {
+            IEnumerable<History> history;
+
+            try
+            {
+                history = await _userService.GetUserHistoryAsync(userToken, cancellationToken);
+            }
+            catch (ArgumentException e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+
+            return new OkObjectResult(history.ToDto());
         }
     }
 }

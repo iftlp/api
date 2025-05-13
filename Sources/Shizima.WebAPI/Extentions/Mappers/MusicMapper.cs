@@ -48,7 +48,7 @@ namespace Shizima.Business.Mappers
         /// <summary>
         /// Map a list of music dto to entity
         /// </summary>
-        /// <param name="musicDto">The list of music dto</param>
+        /// <param name="musicDtos">The list of music dto</param>
         /// <returns>The mapped list of music entity</returns>
         public static IEnumerable<Music> ToEntity(this IEnumerable<MusicDto> musicDtos)
         {
