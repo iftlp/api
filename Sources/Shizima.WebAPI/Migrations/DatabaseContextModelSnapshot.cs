@@ -125,6 +125,11 @@ namespace Shizima.WebAPI.Migrations
                     b.Property<long>("AlbumId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)

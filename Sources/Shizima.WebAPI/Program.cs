@@ -74,6 +74,8 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(conn
 builder.Services.AddTransient<UnitOfWork>();
 builder.Services.AddTransient<TokenProvider>();
 builder.Services.AddTransient<MusicService>();
+builder.Services.AddTransient<AlbumService>();
+builder.Services.AddTransient<ArtistService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<AdministratorService>();
 

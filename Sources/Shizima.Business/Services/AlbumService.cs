@@ -42,7 +42,11 @@ namespace Shizima.Business.Services
         public async Task<Album> GetAlbumByIdAsync(int id, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Try to get album for id: {Id}", id);
-            var album = await _unitOfWork.DbContext.Albums.Where(a => a.Id == id).FirstOrDefaultAsync(cancellationToken);
+            var album = await _unitOfWork.DbContext.Albums
+                .Where(a => a.Id == id)
+                .Include(a => a.Musics)
+                .ThenInclude(m => m.Artists)
+                .FirstOrDefaultAsync(cancellationToken);
             if (album == null)
             {
                 _logger.LogError(ERROR_PREFIX + "GET_BY_ID: The album for id: {Id} not found.", id);

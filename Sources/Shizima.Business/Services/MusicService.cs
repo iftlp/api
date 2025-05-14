@@ -43,7 +43,11 @@ namespace Shizima.Business.Services
         public async Task<Music> GetMusicByIdAsync(int id, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Get music for id: {Id}.", id);
-            var music = await _unitOfWork.DbContext.Musics.Where(m => m.Id == id).FirstOrDefaultAsync(cancellationToken);
+            var music = await _unitOfWork.DbContext.Musics
+                .Where(m => m.Id == id)
+                .Include(m => m.Album)
+                .Include(m => m.Artists)
+                .FirstOrDefaultAsync(cancellationToken);
             if (music == null)
             {
                 _logger.LogError(ERROR_PREFIX + "GET_BY_ID: Music with id: {Id} was not found.", id);
@@ -63,7 +67,10 @@ namespace Shizima.Business.Services
         public async Task<PaginatedList<Music>?> GetAllMusicsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Getting every musics entry.");
-            var musics = await _unitOfWork.DbContext.Musics.ToListAsync(cancellationToken);
+            var musics = await _unitOfWork.DbContext.Musics
+                .Include(m => m.Album)
+                .Include(m => m.Artists)
+                .ToListAsync(cancellationToken);
             return musics.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
         }
 
