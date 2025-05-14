@@ -16,7 +16,6 @@ namespace Shizima.Business.Mappers
             {
                 Id = artist.Id,
                 Name = artist.Name,
-                Musics = artist.Musics?.ToDto(),
             };
         }
 
