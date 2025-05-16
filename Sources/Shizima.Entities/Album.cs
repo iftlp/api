@@ -19,5 +19,16 @@ namespace Shizima.Entities
         /// Gets or sets the album's musics.
         /// </summary>
         public ICollection<Music>? Musics { get; set; }
+
+        /// <summary>
+        /// Gets or sets the album's artist id.
+        /// </summary>
+        [Required]
+        public required long ArtistId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the album's artist.
+        /// </summary>
+        public Artist? Artist { get; set; }
     }
 }

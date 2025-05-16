@@ -21,7 +21,12 @@ namespace Shizima.Dtos
         /// </summary>
         [Description("The music's file path")]
         public required string FilePath { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the music's duration.
+        /// </summary>
+        public long DurationInSec { get; set; }
+
         /// <summary>
         /// Gets or sets the music's artists.
         /// </summary>

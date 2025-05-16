@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shizima.Business.Extensions.Collections;
 using Shizima.Entities;
 using Shizima.Providers;
 
@@ -50,7 +51,41 @@ namespace Shizima.Business.Services
             }
             return artist;
         }
-        
+
+        /// <summary>
+        /// Get list of artists by music id.
+        /// </summary>
+        /// <param name="musicId">The id of the music</param>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns>The list of artists</returns>
+        public async Task<IEnumerable<Artist>> GetArtistByMusicIdAsync(int musicId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Try to get artist for music id: {Id}", musicId);
+            var artists = await _unitOfWork.DbContext.Artists.Where(a => a.Musics.Any(m => m.Id == musicId)).ToListAsync(cancellationToken);
+            if (artists == null)
+            {
+                _logger.LogError(ERROR_PREFIX + "GET_BY_ID: The artists for music id: {Id} not found.", musicId);
+                throw new ArgumentException($"{ERROR_PREFIX}GET_BY_ID: The artists for music id: {musicId} not found.");
+            }
+            return artists;
+        }
+
+        /// <summary>
+        /// Gets all artists paginated.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page</param>
+        /// <param name="pageSize">The size of the page</param>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns>The list of artists</returns>
+        public async Task<PaginatedList<Artist>?> GetAllArtistsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Getting every musics entry.");
+            var artists = await _unitOfWork.DbContext.Artists
+                .Include(a => a.Musics)
+                .ToListAsync(cancellationToken);
+            return artists.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);
+        }
+
         /// <summary>
         /// Create an artist.
         /// </summary>

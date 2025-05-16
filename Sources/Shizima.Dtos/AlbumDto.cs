@@ -27,6 +27,10 @@ namespace Shizima.Dtos
         /// </summary>
         [Description("The album's musics")]
         public IEnumerable<MusicDto>? Musics { get; set; }
-        //public Dictionary<long, string>? Musics { get; set; }
+
+        /// <summary>
+        /// Gets or sets the album's artist.
+        /// </summary>
+        public ArtistDto? Artist { get; set; }
     }
 }

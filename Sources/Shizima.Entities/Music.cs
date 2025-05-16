@@ -11,11 +11,16 @@ namespace Shizima.Entities
         public required string Title { get; set; }
 
         /// <summary>
-        /// Get or sets the music's file path.
+        /// Gets or sets the music's file path.
         /// </summary>
         [Required, MaxLength(500)]
         public required string FilePath { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the music's duration.
+        /// </summary>
+        public long DurationInSec { get; set; }
+
         /// <summary>
         /// Gets or sets the music's album id.
         /// </summary>

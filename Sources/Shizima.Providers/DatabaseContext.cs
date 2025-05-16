@@ -37,6 +37,7 @@ namespace Shizima.Providers
         private static void InitializeAlbumsMusicsRelation(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Album>().HasMany(a => a.Musics).WithOne(m => m.Album).HasForeignKey(m => m.AlbumId);
+            modelBuilder.Entity<Album>().HasOne(a => a.Artist).WithMany().HasForeignKey(a => a.ArtistId);
         }
         
         private static void InitializeHistoryRelations(ModelBuilder modelBuilder)

@@ -65,6 +65,9 @@ namespace Shizima.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("ArtistId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Cover")
                         .HasColumnType("text");
 
@@ -74,6 +77,8 @@ namespace Shizima.WebAPI.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ArtistId");
 
                     b.ToTable("Albums");
                 });
@@ -104,6 +109,12 @@ namespace Shizima.WebAPI.Migrations
                     b.Property<long>("MusicId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
                     b.Property<DateTime>("RecognitionDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -123,6 +134,9 @@ namespace Shizima.WebAPI.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("AlbumId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("DurationInSec")
                         .HasColumnType("bigint");
 
                     b.Property<string>("FilePath")
@@ -171,6 +185,17 @@ namespace Shizima.WebAPI.Migrations
                         .HasForeignKey("MusicsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Shizima.Entities.Album", b =>
+                {
+                    b.HasOne("Shizima.Entities.Artist", "Artist")
+                        .WithMany()
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
                 });
 
             modelBuilder.Entity("Shizima.Entities.History", b =>

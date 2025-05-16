@@ -17,6 +17,7 @@ namespace Shizima.Business.Mappers
                 Id = music.Id,
                 Title = music.Title,
                 FilePath = music.FilePath,
+                DurationInSec = music.DurationInSec,
                 Artists = music.Artists.ToDto(),
                 Album = music.Album.ToDtoNoMusic(),
             };
@@ -34,6 +35,7 @@ namespace Shizima.Business.Mappers
                 Id = music.Id,
                 Title = music.Title,
                 FilePath = music.FilePath,
+                DurationInSec = music.DurationInSec,
                 Artists = music.Artists.ToDto(),
             };
         }
@@ -70,6 +72,7 @@ namespace Shizima.Business.Mappers
                 Id = musicDto.Id,
                 Title = musicDto.Title,
                 FilePath = musicDto.FilePath,
+                DurationInSec = musicDto.DurationInSec,
                 Artists = musicDto.Artists?.ToEntity().ToList(),
                 Album = musicDto.Album.ToEntity(),
                 AlbumId = musicDto.Album.Id,
