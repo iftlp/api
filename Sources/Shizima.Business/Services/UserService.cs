@@ -91,8 +91,7 @@ namespace Shizima.Business.Services
 
             if (history == null)
             {
-                _logger.LogError(ERROR_PREFIX + "GET_HISTORY: The user with token: {UserToken} have no history.", userToken);
-                throw new ArgumentException($"{ERROR_PREFIX}GET_HISTORY: The user with token: {userToken} have no history.");
+                return Enumerable.Empty<History>();
             }
             
             return history;
