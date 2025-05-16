@@ -18,6 +18,7 @@ namespace Shizima.Business.Mappers
                 Title = album.Title,
                 Cover = album.Cover,
                 Musics = album.Musics.ToDtoNoAlbum(),
+                Artist = album.Artist?.ToDto(),
             };
         }
         
@@ -33,6 +34,7 @@ namespace Shizima.Business.Mappers
                 Id = album.Id,
                 Title = album.Title,
                 Cover = album.Cover,
+                Artist = album.Artist?.ToDto(),
             };
         }
 
@@ -68,6 +70,8 @@ namespace Shizima.Business.Mappers
                 Id = albumDto.Id,
                 Title = albumDto.Title,
                 Cover = albumDto.Cover,
+                ArtistId = albumDto.Artist?.Id ?? -1,
+                Artist = albumDto.Artist?.ToEntity(),
             };
         }
 

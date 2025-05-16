@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shizima.Entities
 {
-    public class History
+    public class History : BaseEntity
     {
         /// <summary>
         /// Gets or sets the history user id.

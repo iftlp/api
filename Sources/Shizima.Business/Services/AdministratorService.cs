@@ -32,7 +32,7 @@ namespace Shizima.Business.Services
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger;
         }
-        
+
         /// <summary>
         /// Try to get a administrator by its login/password, and check if he is admin.
         /// </summary>
@@ -49,7 +49,7 @@ namespace Shizima.Business.Services
             }
 
             _logger.LogInformation("Try get administrator from email: {Email}.", email);
-            var administrator = await _unitOfWork.DbContext.Administrators.Where(a => a.Email == email && 
+            var administrator = await _unitOfWork.DbContext.Administrators.Where(a => a.Email == email &&
                                                                                     a.Password == password
                                                                                     ).FirstOrDefaultAsync(cancellationToken);
             if (administrator == null)
@@ -58,5 +58,23 @@ namespace Shizima.Business.Services
                 throw new ArgumentException($"{ERROR_PREFIX}AUTHENTICATION_FAILED: No administrator exist in database with email {email}.");
             }
         }
-    }   
+
+        public async Task CreateAdministrator(string email, string password, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                _logger.LogError("Authentication failed: Missing or empty credentials. Email: '{Email}'.", email);
+                throw new ArgumentException($"{ERROR_PREFIX}AUTHENTICATION_FAILED: Provided email or password is empty.");
+            }
+            _logger.LogInformation("Try create administrator with email: {Email}.", email);
+            var administrator = new Administrator
+            {
+                Email = email,
+                Password = password
+            };
+
+            await _unitOfWork.DbContext.Administrators.AddAsync(administrator, cancellationToken);
+            _unitOfWork.SaveChanges();
+        }
+    }
 }

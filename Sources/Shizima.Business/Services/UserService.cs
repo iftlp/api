@@ -82,7 +82,12 @@ namespace Shizima.Business.Services
                 throw new ArgumentException($"{ERROR_PREFIX}GET_HISTORY: The user with token: {userToken} doesn't exist.");
             }
 
-            var history = await _unitOfWork.DbContext.Histories.Where(h => h.UserId == user.Id).ToListAsync(cancellationToken);
+            var history = await _unitOfWork.DbContext.Histories
+                .Where(h => h.UserId == user.Id)
+                .Include(h => h.Music)
+                .ThenInclude(m => m.Album)
+                .ThenInclude(a => a.Artist)
+                .ToListAsync(cancellationToken);
 
             if (history == null)
             {

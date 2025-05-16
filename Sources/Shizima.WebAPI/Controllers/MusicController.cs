@@ -32,8 +32,8 @@ namespace Shizima.WebAPI.Controllers
         /// <param name="cancellationToken">The cancellationToken</param>
         /// <returns>The music</returns>
         [HttpGet("{id:int}", Name = "Get a music by id")]
-        [ProducesResponseType<ArtistDto>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ArtistDto>> GetArtistByIdAsync(int id, CancellationToken cancellationToken = default)
+        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MusicDto>> GetMusicByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             Music music;
             try
