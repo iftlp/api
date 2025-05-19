@@ -2,6 +2,7 @@
 using Shizima.Business.Mappers;
 using Shizima.Business.Services;
 using Shizima.Dtos;
+using Shizima.WebAPI.Extentions.Mappers;
 
 namespace Shizima.WebAPI.Controllers
 {
@@ -20,17 +21,74 @@ namespace Shizima.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Load the music data on the server, to start recognition.
+        /// Send music raw data for recognition, as a user.
         /// </summary>
         /// <param name="data">The music data as byte's array.</param>
         /// <param name="userToken">The user token that request the recognition</param>
         /// <param name="cancellationToken">The cancellation token</param>
-        /// <returns>A boolean value based on the lenght of the data.</returns>
-        [HttpPost("userToken/{userToken}", Name = "Send music data for recognition")]
-        [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<MusicDto>> RecoguenizeMusic([FromBody] IEnumerable<byte> data, [FromQuery] string userToken, CancellationToken cancellationToken = default)
+        /// <returns>The recognize music information.</returns>
+        [HttpPost("rawData/{userToken}", Name = "Send raw music data for recognition, as a user")]
+        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MusicDto>> RecognizeAudioRawDataUserAsync([FromBody] IEnumerable<byte> data, [FromRoute] string userToken, CancellationToken cancellationToken = default)
         {
             var result =  await _recognitionService.RecognizeAudioAsync(data, userToken, cancellationToken);
+
+            if (result == null)
+                return new NotFoundResult();
+
+            return new OkObjectResult(result.ToDto());
+        }
+        
+        /// <summary>
+        /// Send music file data for recognition, as a user.
+        /// </summary>
+        /// <param name="audioFile">The music .wav file.</param>
+        /// <param name="userToken">The user token that request the recognition</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>The recognize music information.</returns>
+        [HttpPost("wavFile/{userToken}", Name = "Send music file data for recognition, as a user")]
+        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MusicDto>> RecognizeAudioFileDataUserAsync([FromForm]IFormFile audioFile, [FromRoute] string userToken, CancellationToken cancellationToken = default)
+        {
+            var dataBytes = await audioFile.ToBytes();
+            var result =  await _recognitionService.RecognizeAudioAsync(dataBytes, userToken, cancellationToken);
+
+            if (result == null)
+                return new NotFoundResult();
+
+            return new OkObjectResult(result.ToDto());
+        }
+
+        /// <summary>
+        /// Send music raw data for recognition.
+        /// </summary>
+        /// <param name="data">The music data as byte's array.</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>The recognize music information.</returns>
+        [HttpPost("rawData", Name = "Send music raw data for recognition")]
+        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MusicDto>> RecognizeAudioRawDataAsync([FromBody] IEnumerable<byte> data, CancellationToken cancellationToken = default)
+        {
+            var result =  await _recognitionService.RecognizeAudioAsync(data, null, cancellationToken);
+
+            if (result == null)
+                return new NotFoundResult();
+
+            return new OkObjectResult(result.ToDto());
+        }
+        
+        /// <summary>
+        /// Send music wav file for recognition.
+        /// </summary>
+        /// <param name="audioFile">The music .wav file.</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>The recognize music information.</returns>
+        [HttpPost("wavFile", Name = "Send music wav file for recognition")]
+        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<MusicDto>> RecognizeAudioFileDataAsync([FromForm]IFormFile audioFile, CancellationToken cancellationToken = default)
+        {
+            var dataBytes = await audioFile.ToBytes();
+            var result =  await _recognitionService.RecognizeAudioAsync(dataBytes, null, cancellationToken);
 
             if (result == null)
                 return new NotFoundResult();
