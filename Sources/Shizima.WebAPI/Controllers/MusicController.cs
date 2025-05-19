@@ -7,6 +7,8 @@ using Shizima.Dtos;
 using Shizima.WebAPI.Extentions.Controller;
 using System.ComponentModel;
 using Shizima.Entities;
+using Shizima.ClientAPI.MinioClient;
+using Shizima.WebAPI.Extentions.Mappers;
 
 namespace Shizima.WebAPI.Controllers
 {
@@ -19,10 +21,14 @@ namespace Shizima.WebAPI.Controllers
     public class MusicController : Controller
     {
         private readonly MusicService _musicService;
-
-        public MusicController(MusicService musicService) 
+        private readonly RecognitionService _recognitionService;
+        private readonly MinioService _minioService;
+        private const string MINIO_FOLDER_NAME = "database";
+        public MusicController(MusicService musicService, MinioService minioService, RecognitionService recognitionService) 
         {
             _musicService = musicService;
+            _recognitionService = recognitionService;
+            _minioService = minioService;
         }
 
         /// <summary>
@@ -77,11 +83,14 @@ namespace Shizima.WebAPI.Controllers
         [Authorize]
         [HttpPost(Name = "Add a music entry to the database.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> CreateMusicAsync([FromBody]MusicDto musicDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> CreateMusicAsync([FromForm]MusicUploadRequestDto musicUpload, CancellationToken cancellationToken = default)
         {
             try
             {
-                await _musicService.CreateMusicAsync(musicDto.ToEntity(), cancellationToken);
+                await _minioService.UploadFileAsync("shizima", MINIO_FOLDER_NAME + "/" + musicUpload.File.FileName, musicUpload.File);
+                var dataBytes = await musicUpload.File.ToBytes();
+                var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(MINIO_FOLDER_NAME + "/" + musicUpload.File.FileName), cancellationToken);
+                await _recognitionService.GenerateAudioFingerprintsAsync(musicId, dataBytes, cancellationToken);
             }
             catch (ArgumentException e)
             {

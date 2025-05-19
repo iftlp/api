@@ -24,6 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Shizima.Business\Shizima.Business.csproj" />
       <ProjectReference Include="..\Shizima.Dtos\Shizima.Dtos.csproj" />
+      <ProjectReference Include="..\Shizima.MinioClient\Shizima.MinioClient.csproj" />
       <ProjectReference Include="..\Shizima.Providers\Shizima.Providers.csproj" />
     </ItemGroup>
 

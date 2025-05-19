@@ -1,7 +1,23 @@
 ﻿namespace Shizima.Entities
 {
-    public class Fingerprint : BaseEntity
+    /// <summary>
+    /// Represent an audio fingerprint
+    /// </summary>
+    public class DatabaseFingerprint : BaseEntity
     {
-        // Body of this class to determine.
+        /// <summary>
+        /// Hash value of the fingerprint
+        /// </summary>
+        public uint Hash { get; set; }
+
+        /// <summary>
+        /// Time offset from the audio begining
+        /// </summary>
+        public int TimeOffset { get; set; }
+
+        /// <summary>
+        /// The corresponding music id
+        /// </summary>
+        public long MusicId { get; set; }
     }
 }

@@ -55,7 +55,7 @@ namespace Shizima.WebAPI.Controllers
         [Authorize]
         [HttpPost(Name = "Add an album entry to the database.")]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult> CreateAlbumAsync([FromBody] AlbumDto albumDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> CreateAlbumAsync([FromBody] AlbumPostDto albumDto, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace Shizima.WebAPI.Controllers
         [Authorize]
         [HttpPut("{id:int}", Name = "Update an album entry of the database.")]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateAlbumAsync([FromRoute] int id, [FromBody] AlbumDto albumDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> UpdateAlbumAsync([FromRoute] int id, [FromBody] AlbumPostDto albumDto, CancellationToken cancellationToken = default)
         {
             try
             {
