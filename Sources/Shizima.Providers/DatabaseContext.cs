@@ -44,7 +44,6 @@ namespace Shizima.Providers
         
         private static void InitializeHistoryRelations(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<History>().HasKey(h => new {h.UserId, h.MusicId});
             modelBuilder.Entity<History>().HasOne(h => h.User)
                                             .WithMany(u => u.Histories)
                                             .HasForeignKey(h => h.UserId);
