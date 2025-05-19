@@ -9,6 +9,7 @@ using System.ComponentModel;
 using Shizima.Entities;
 using Shizima.ClientAPI.MinioClient;
 using Shizima.WebAPI.Extentions.Mappers;
+using System.Text.RegularExpressions;
 
 namespace Shizima.WebAPI.Controllers
 {
@@ -23,7 +24,8 @@ namespace Shizima.WebAPI.Controllers
         private readonly MusicService _musicService;
         private readonly RecognitionService _recognitionService;
         private readonly MinioService _minioService;
-        private const string MINIO_FOLDER_NAME = "database";
+        private const string MINIO_MUSIC_FOLDER_NAME = "database/music/";
+
         public MusicController(MusicService musicService, MinioService minioService, RecognitionService recognitionService) 
         {
             _musicService = musicService;
@@ -87,9 +89,12 @@ namespace Shizima.WebAPI.Controllers
         {
             try
             {
-                await _minioService.UploadFileAsync("shizima", MINIO_FOLDER_NAME + "/" + musicUpload.File.FileName, musicUpload.File);
+                var audioSlug = Regex.Replace(musicUpload.Music.Title.ToLowerInvariant().Trim(), @"\s+", "-");
+                var audioFileName = MINIO_MUSIC_FOLDER_NAME + audioSlug + ".wav";
+                
+                await _minioService.UploadFileAsync("shizima", audioFileName, musicUpload.File);
                 var dataBytes = await musicUpload.File.ToBytes();
-                var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(MINIO_FOLDER_NAME + "/" + musicUpload.File.FileName), cancellationToken);
+                var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(audioFileName), cancellationToken);
                 await _recognitionService.GenerateAudioFingerprintsAsync(musicId, dataBytes, cancellationToken);
             }
             catch (ArgumentException e)

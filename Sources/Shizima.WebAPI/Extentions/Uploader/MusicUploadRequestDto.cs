@@ -2,6 +2,9 @@
 {
     public class MusicUploadRequestDto
     {
+        /// <summary>
+        /// The file to upload.
+        /// </summary>
         public IFormFile File { get; set; }
 
         /// <summary>

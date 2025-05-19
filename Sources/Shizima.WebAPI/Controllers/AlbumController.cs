@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shizima.Business.Mappers;
 using Shizima.Business.Services;
+using Shizima.ClientAPI.MinioClient;
 using Shizima.Dtos;
 using Shizima.Entities;
+using Shizima.WebAPI.Extentions.Uploader;
+using System.Text.RegularExpressions;
 
 namespace Shizima.WebAPI.Controllers
 {
@@ -17,10 +20,12 @@ namespace Shizima.WebAPI.Controllers
     {
         
         private readonly AlbumService _albumService;
-
-        public AlbumController(AlbumService albumService) 
+        private readonly MinioService _minioService;
+        private const string MINIO_COVER_FOLDER_NAME = "database/cover/";
+        public AlbumController(AlbumService albumService, MinioService minioService) 
         {
             _albumService = albumService;
+            _minioService = minioService;
         }
 
         /// <summary>
@@ -45,7 +50,30 @@ namespace Shizima.WebAPI.Controllers
 
             return new OkObjectResult(album.ToDto());
         }
-        
+
+        /// <summary>
+        /// Get albums by artist id.
+        /// </summary>
+        /// <param name="artistId">The artist id</param>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns>The list of albums</returns>
+        [HttpGet("artist-id/{artistId:int}", Name = "Get albums by artist id")]
+        [ProducesResponseType<IEnumerable<AlbumDto>>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<AlbumDto>>> GetAlbumsByArtistIdAsync(int artistId, CancellationToken cancellationToken = default)
+        {
+            IEnumerable<Album> albums;
+            try
+            {
+                albums = await _albumService.GetAlbumsByArtistIdAsync(artistId, cancellationToken);
+            }
+            catch (ArgumentNullException e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+
+            return new OkObjectResult(albums.ToDto());
+        }
+
         /// <summary>
         /// Add an album entry to the database.
         /// </summary>
@@ -55,11 +83,16 @@ namespace Shizima.WebAPI.Controllers
         [Authorize]
         [HttpPost(Name = "Add an album entry to the database.")]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult> CreateAlbumAsync([FromBody] AlbumPostDto albumDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> CreateAlbumAsync([FromForm]AlbumUploadRequestDto albumUpload, CancellationToken cancellationToken = default)
         {
             try
             {
-                await _albumService.CreateAlbumAsync(albumDto.ToEntity(), cancellationToken);
+                var coverSlug = Regex.Replace(albumUpload.Album.Title.ToLowerInvariant().Trim(), @"\s+", "-");
+                var coverFileName = MINIO_COVER_FOLDER_NAME + coverSlug + ".png";
+
+                await _minioService.UploadFileAsync("shizima", coverFileName, albumUpload.Cover);
+
+                await _albumService.CreateAlbumAsync(albumUpload.Album.ToEntity(coverFileName), cancellationToken);
             }
             catch (ArgumentException e)
             {
@@ -79,7 +112,7 @@ namespace Shizima.WebAPI.Controllers
         [Authorize]
         [HttpPut("{id:int}", Name = "Update an album entry of the database.")]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateAlbumAsync([FromRoute] int id, [FromBody] AlbumPostDto albumDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> UpdateAlbumAsync([FromRoute] int id, [FromBody] AlbumDto albumDto, CancellationToken cancellationToken = default)
         {
             try
             {

@@ -17,12 +17,6 @@ namespace Shizima.Dtos
         public required string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets the album's cover.
-        /// </summary>
-        [Description("The album's cover")]
-        public string? Cover { get; set; }
-
-        /// <summary>
         /// Gets or sets the album's musics.
         /// </summary>
         [Description("The album's musics")]
