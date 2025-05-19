@@ -88,5 +88,23 @@ namespace Shizima.Business.Mappers
         {
             return musicDtos.Select(ToEntity) ?? Enumerable.Empty<Music>();
         }
+
+        /// <summary>
+        /// Map a music dto to entity
+        /// </summary>
+        /// <param name="musicDto">The music dto</param>
+        /// <returns>The mapped music entity</returns>
+        public static Music ToEntity(this MusicPostDto musicDto, string filePath)
+        {
+            return new Music
+            {
+                Id = musicDto.Id,
+                Title = musicDto.Title,
+                FilePath = filePath,
+                DurationInSec = musicDto.DurationInSec,
+                Artists = musicDto.Artists?.ToEntity().ToList(),
+                AlbumId = musicDto.AlbumId ?? -1,
+            };
+        }
     }
 }

@@ -13,8 +13,9 @@ namespace Shizima.Providers
         public DbSet<Music> Musics { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<History> Histories { get; set; }
+        public DbSet<DatabaseFingerprint> Fingerprints { get; set; }
         public DbSet<Administrator> Administrators { get; set; }
-        
+
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         { }
 
@@ -26,6 +27,7 @@ namespace Shizima.Providers
             InitializeArtistsMusicsRelation(modelBuilder);
             InitializeAlbumsMusicsRelation(modelBuilder);
             InitializeHistoryRelations(modelBuilder);
+            InitializeFingerprintRelations(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
@@ -49,6 +51,13 @@ namespace Shizima.Providers
             modelBuilder.Entity<History>().HasOne(h => h.Music)
                                             .WithMany(m => m.Histories)
                                             .HasForeignKey(h => h.MusicId);
+        }
+
+        private static void InitializeFingerprintRelations(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Music>().HasMany(m => m.Fingerprints)
+                                        .WithOne()
+                                        .HasForeignKey(f => f.MusicId);
         }
     }
 }

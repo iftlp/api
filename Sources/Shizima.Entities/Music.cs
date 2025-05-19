@@ -41,5 +41,10 @@ namespace Shizima.Entities
         /// Gets or sets the music's histories.
         /// </summary>
         public ICollection<History>? Histories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the music's fingerprints
+        /// </summary> 
+        public ICollection<DatabaseFingerprint>? Fingerprints { get; set; }
     }
 }

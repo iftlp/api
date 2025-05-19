@@ -7,6 +7,7 @@ using Shizima.Providers;
 using Shizima.WebAPI.Authentication;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Shizima.ClientAPI.MinioClient;
 
 var builder = WebApplication.CreateBuilder(args);
 var corsPolicy = "corsPolicy";
@@ -78,6 +79,8 @@ builder.Services.AddTransient<AlbumService>();
 builder.Services.AddTransient<ArtistService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<AdministratorService>();
+builder.Services.AddTransient<RecognitionService>();
+builder.Services.AddTransient<MinioService>();
 
 builder.Services.AddCors(options => options.AddPolicy(name: corsPolicy, builder =>
 {

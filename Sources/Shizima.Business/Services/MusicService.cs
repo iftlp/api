@@ -33,7 +33,7 @@ namespace Shizima.Business.Services
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger;
         }
-        
+
         /// <summary>
         /// Gets music by id.
         /// </summary>
@@ -79,17 +79,18 @@ namespace Shizima.Business.Services
         /// </summary>
         /// <param name="music">The music entity</param>
         /// <param name="cancellationToken">The cancellationToken</param>
-        public async Task CreateMusicAsync(Music music, CancellationToken cancellationToken)
+        public async Task<long> CreateMusicAsync(Music music, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Try to create music {Id}", music.Id);
-            await _unitOfWork.DbContext.Musics.AddAsync(music, cancellationToken);
+            var createdMusic = await _unitOfWork.DbContext.Musics.AddAsync(music, cancellationToken);
             var result = await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
             if (result == 0)
             {
-                _logger.LogError(ERROR_PREFIX + "CREATION: The music creation for {Id} failed.", music.Id);
-                throw new ArgumentException($"{ERROR_PREFIX}CREATION: The music creation for {music.Id} failed.");
+                _logger.LogError(ERROR_PREFIX + "CREATION: The music creation for {Id} failed.", createdMusic.Entity.Id);
+                throw new ArgumentException($"{ERROR_PREFIX}CREATION: The music creation for {createdMusic.Entity.Id} failed.");
             }
-            _logger.LogInformation("Success to create music {Id}", music.Id);
+            _logger.LogInformation("Success to create music {Id}", createdMusic.Entity.Id);
+            return createdMusic.Entity.Id;
         }
         
         /// <summary>

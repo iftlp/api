@@ -61,7 +61,7 @@ namespace Shizima.Business.Mappers
         /// <summary>
         /// Map a album dto to entity
         /// </summary>
-        /// <param name="musicDto">The album dto</param>
+        /// <param name="albumDto">The album dto</param>
         /// <returns>The mapped album entity</returns>
         public static Album ToEntity(this AlbumDto albumDto)
         {
@@ -78,9 +78,35 @@ namespace Shizima.Business.Mappers
         /// <summary>
         /// Map a list of album dto to entity
         /// </summary>
-        /// <param name="musicDto">The list of album dto</param>
+        /// <param name="albumDtos">The list of album dto</param>
         /// <returns>The mapped list of album entity</returns>
         public static IEnumerable<Album> ToEntity(this IEnumerable<AlbumDto> albumDtos)
+        {
+            return albumDtos.Select(ToEntity) ?? Enumerable.Empty<Album>();
+        }
+
+        /// <summary>
+        /// Map a album dto to entity
+        /// </summary>
+        /// <param name="albumDto">The album dto</param>
+        /// <returns>The mapped album entity</returns>
+        public static Album ToEntity(this AlbumPostDto albumDto)
+        {
+            return new Album
+            {
+                Id = albumDto.Id,
+                Title = albumDto.Title,
+                Cover = albumDto.Cover,
+                ArtistId = albumDto.ArtistId ?? -1,
+            };
+        }
+
+        /// <summary>
+        /// Map a list of album dto to entity
+        /// </summary>
+        /// <param name="albumDtos">The list of album dto</param>
+        /// <returns>The mapped list of album entity</returns>
+        public static IEnumerable<Album> ToEntity(this IEnumerable<AlbumPostDto> albumDtos)
         {
             return albumDtos.Select(ToEntity) ?? Enumerable.Empty<Album>();
         }

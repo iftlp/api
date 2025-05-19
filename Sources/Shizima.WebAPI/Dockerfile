@@ -17,6 +17,7 @@ COPY ["Shizima.Entities/Shizima.Entities.csproj", "Shizima.Entities/"]
 COPY ["Shizima.Business/Shizima.Business.csproj", "Shizima.Business/"]
 COPY ["Shizima.Dtos/Shizima.Dtos.csproj", "Shizima.Dtos/"]
 COPY ["Shizima.WebAPI/Migrations", "Shizima.WebAPI/Migrations"]
+COPY ["Shizima.MinioClient/Shizima.MinioClient.csproj", "Shizima.MinioClient/"]
 
 RUN dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
 RUN dotnet restore "Shizima.WebAPI/Shizima.WebAPI.csproj"
