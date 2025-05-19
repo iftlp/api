@@ -42,7 +42,15 @@ namespace Shizima.Business.Services
             _userService = userService;
         }
 
-        public async Task<Music?> RecognizeAudioAsync(IEnumerable<byte> queryAudioData, string? userToken, CancellationToken cancellationToken)
+        /// <summary>
+        /// Recognize audio data for a user.
+        /// </summary>
+        /// <param name="queryAudioData"></param>
+        /// <param name="userToken"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The music information</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<History?> RecognizeAudioAsUserAsync(IEnumerable<byte> queryAudioData, string userToken, CancellationToken cancellationToken)
         {
             try
             {
@@ -77,28 +85,75 @@ namespace Shizima.Business.Services
                     throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: Music not found.");
                 }
 
-                // If a userToken is provided, add history entry
-                if (!string.IsNullOrEmpty(userToken))
+                var user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
+                if (user == null)
                 {
-                    var user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
-                    if (user == null)
-                    {
-                        await _userService.CreateUserAsync(userToken, cancellationToken);
-                    }
+                    await _userService.CreateUserAsync(userToken, cancellationToken);
+                }
 
-                    user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
+                user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
 
-                    var history = new History()
-                    {
-                        RecognitionDate = DateTime.UtcNow,
-                        UserId = user.Id,
-                        User = user,
-                        MusicId = music.Id,
-                        Music = music
-                    };
+                var history = new History()
+                {
+                    RecognitionDate = DateTime.UtcNow,
+                    UserId = user!.Id,
+                    User = user,
+                    MusicId = music.Id,
+                    Music = music
+                };
 
-                    await _unitOfWork.DbContext.AddAsync(history, cancellationToken);
-                    _unitOfWork.SaveChanges(); 
+                var newHistoryEntry = await _unitOfWork.DbContext.AddAsync(history, cancellationToken);
+                _unitOfWork.SaveChanges();
+
+                return newHistoryEntry.Entity;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ERROR_PREFIX + "RECOGNIZE: " + ex.Message);
+                throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Recognize audio data.
+        /// </summary>
+        /// <param name="queryAudioData"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task<Music?> RecognizeAudioAsync(IEnumerable<byte> queryAudioData, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var queryFingerprint = FingerprintGenerator.AnalyzeAudio(queryAudioData.ToArray());
+
+                var tempDatabaseFingerprints = await _unitOfWork.DbContext.Fingerprints.ToListAsync(cancellationToken);
+
+                if (tempDatabaseFingerprints == null || tempDatabaseFingerprints.Count == 0)
+                {
+                    _logger.LogError(ERROR_PREFIX + "RECOGNIZE: No fingerprints found in the database.");
+                    throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: No fingerprints found in the database.");
+                }
+
+                var databaseFingerprints = tempDatabaseFingerprints!.ToDict();
+
+                var resultList = AudioRecognizer.RecognizeAudioList(queryFingerprint, databaseFingerprints);
+
+                if (resultList == null || resultList.Count == 0)
+                {
+                    _logger.LogError(ERROR_PREFIX + "RECOGNIZE: No music found.");
+                    throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: No music found.");
+                }
+
+                var music = await _unitOfWork.DbContext.Musics.Where(m => m.Id == resultList.First()!.TrackId)
+                    .Include(m => m.Album)
+                    .Include(m => m.Artists)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (music == null)
+                {
+                    _logger.LogError(ERROR_PREFIX + "RECOGNIZE: Music not found.");
+                    throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: Music not found.");
                 }
 
                 return music;
@@ -110,6 +165,13 @@ namespace Shizima.Business.Services
             }
         }
 
+        /// <summary>
+        /// Generate audio fingerprints for a music.
+        /// </summary>
+        /// <param name="musicId"></param>
+        /// <param name="newAudioData"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task GenerateAudioFingerprintsAsync(long musicId, IEnumerable<byte> newAudioData, CancellationToken cancellationToken)
         {
             var newFingerprints = FingerprintGenerator.AnalyzeAudio(newAudioData.ToArray());

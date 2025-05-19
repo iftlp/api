@@ -127,24 +127,26 @@ namespace Shizima.WebAPI.Migrations
 
             modelBuilder.Entity("Shizima.Entities.History", b =>
                 {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("MusicId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("MusicId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("RecognitionDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("UserId", "MusicId");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("MusicId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Histories");
                 });

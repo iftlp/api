@@ -28,10 +28,10 @@ namespace Shizima.WebAPI.Controllers
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>The recognize music information.</returns>
         [HttpPost("rawData/{userToken}", Name = "Send raw music data for recognition, as a user")]
-        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<MusicDto>> RecognizeAudioRawDataUserAsync([FromBody] IEnumerable<byte> data, [FromRoute] string userToken, CancellationToken cancellationToken = default)
+        [ProducesResponseType<HistoryDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<HistoryDto>> RecognizeAudioRawDataUserAsync([FromBody] IEnumerable<byte> data, [FromRoute] string userToken, CancellationToken cancellationToken = default)
         {
-            var result =  await _recognitionService.RecognizeAudioAsync(data, userToken, cancellationToken);
+            var result =  await _recognitionService.RecognizeAudioAsUserAsync(data, userToken, cancellationToken);
 
             if (result == null)
                 return new NotFoundResult();
@@ -47,11 +47,11 @@ namespace Shizima.WebAPI.Controllers
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>The recognize music information.</returns>
         [HttpPost("wavFile/{userToken}", Name = "Send music file data for recognition, as a user")]
-        [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<MusicDto>> RecognizeAudioFileDataUserAsync([FromForm]IFormFile audioFile, [FromRoute] string userToken, CancellationToken cancellationToken = default)
+        [ProducesResponseType<HistoryDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<HistoryDto>> RecognizeAudioFileDataUserAsync([FromForm]IFormFile audioFile, [FromRoute] string userToken, CancellationToken cancellationToken = default)
         {
             var dataBytes = await audioFile.ToBytes();
-            var result =  await _recognitionService.RecognizeAudioAsync(dataBytes, userToken, cancellationToken);
+            var result =  await _recognitionService.RecognizeAudioAsUserAsync(dataBytes, userToken, cancellationToken);
 
             if (result == null)
                 return new NotFoundResult();
@@ -69,7 +69,7 @@ namespace Shizima.WebAPI.Controllers
         [ProducesResponseType<MusicDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<MusicDto>> RecognizeAudioRawDataAsync([FromBody] IEnumerable<byte> data, CancellationToken cancellationToken = default)
         {
-            var result =  await _recognitionService.RecognizeAudioAsync(data, null, cancellationToken);
+            var result =  await _recognitionService.RecognizeAudioAsync(data, cancellationToken);
 
             if (result == null)
                 return new NotFoundResult();
@@ -88,7 +88,7 @@ namespace Shizima.WebAPI.Controllers
         public async Task<ActionResult<MusicDto>> RecognizeAudioFileDataAsync([FromForm]IFormFile audioFile, CancellationToken cancellationToken = default)
         {
             var dataBytes = await audioFile.ToBytes();
-            var result =  await _recognitionService.RecognizeAudioAsync(dataBytes, null, cancellationToken);
+            var result =  await _recognitionService.RecognizeAudioAsync(dataBytes, cancellationToken);
 
             if (result == null)
                 return new NotFoundResult();
