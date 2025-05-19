@@ -54,7 +54,25 @@ namespace Shizima.Business.Services
             }
             return album;
         }
-        
+
+        /// <summary>
+        /// Get list of albums by artist id.
+        /// </summary>
+        /// <param name="artistId">The id of the artist</param>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns>The list of albums</returns>
+        public async Task<IEnumerable<Album>> GetAlbumsByArtistIdAsync(int artistId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Try to get albums for artist id: {Id}", artistId);
+            var albums = await _unitOfWork.DbContext.Albums.Where(a => a.ArtistId == artistId).ToListAsync(cancellationToken);
+            if (albums == null)
+            {
+                _logger.LogError(ERROR_PREFIX + "GET_BY_ID: The albums for artist id: {Id} not found.", artistId);
+                throw new ArgumentException($"{ERROR_PREFIX}GET_BY_ID: The albums for artist id: {artistId} not found.");
+            }
+            return albums;
+        }
+
         /// <summary>
         /// Create an album.
         /// </summary>

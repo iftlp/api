@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Shizima.Business.Services;
 using Shizima.WebAPI.Authentication;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Shizima.WebAPI.Controllers
 {
@@ -43,9 +46,36 @@ namespace Shizima.WebAPI.Controllers
             var response = new TokenResponse
             {
                 Token = _tokenProvider.GenerateJwtToken(userIdentity.Email),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddDays(1),
             };
              
+            return new OkObjectResult(response);
+        }
+
+        /// <summary>
+        /// Refresh a Jwt token if the actuel token is still avalaible.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>The Bearer token and it's expiration datetime (UTC)</returns>
+        [Authorize]
+        [HttpGet("refresh")]
+        public async Task<ActionResult<string>> RefreshTokenAsync(CancellationToken cancellationToken)
+        {
+            var userIdentityEmail = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                               ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                               ?? User.FindFirst("sub")?.Value;
+
+            if (userIdentityEmail == null)
+            {
+                return new UnauthorizedObjectResult("Token is not valid.");
+            }
+
+            var response = new TokenResponse
+            {
+                Token = _tokenProvider.GenerateJwtToken(userIdentityEmail),
+                Expires = DateTime.UtcNow.AddDays(1),
+            };
+
             return new OkObjectResult(response);
         }
     }
