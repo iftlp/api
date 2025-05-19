@@ -42,7 +42,7 @@ namespace Shizima.Business.Services
             _userService = userService;
         }
 
-        public async Task<Music?> RecognizeAudioAsync(IEnumerable<byte> queryAudioData, string userToken, CancellationToken cancellationToken)
+        public async Task<Music?> RecognizeAudioAsync(IEnumerable<byte> queryAudioData, string? userToken, CancellationToken cancellationToken)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace Shizima.Business.Services
                     throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: No music found.");
                 }
 
-                var music = await _unitOfWork.DbContext.Musics.Where(m => m.Id == resultList.First().TrackId)
+                var music = await _unitOfWork.DbContext.Musics.Where(m => m.Id == resultList.First()!.TrackId)
                     .Include(m => m.Album)
                     .Include(m => m.Artists)
                     .FirstOrDefaultAsync(cancellationToken);
@@ -77,25 +77,29 @@ namespace Shizima.Business.Services
                     throw new ArgumentException($"{ERROR_PREFIX}RECOGNIZE: Music not found.");
                 }
 
-                var user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
-                if (user == null)
+                // If a userToken is provided, add history entry
+                if (!string.IsNullOrEmpty(userToken))
                 {
-                    await _userService.CreateUserAsync(userToken, cancellationToken);
+                    var user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
+                    if (user == null)
+                    {
+                        await _userService.CreateUserAsync(userToken, cancellationToken);
+                    }
+
+                    user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
+
+                    var history = new History()
+                    {
+                        RecognitionDate = DateTime.UtcNow,
+                        UserId = user.Id,
+                        User = user,
+                        MusicId = music.Id,
+                        Music = music
+                    };
+
+                    await _unitOfWork.DbContext.AddAsync(history, cancellationToken);
+                    _unitOfWork.SaveChanges(); 
                 }
-
-                user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
-
-                var history = new History()
-                {
-                    RecognitionDate = DateTime.UtcNow,
-                    UserId = user.Id,
-                    User = user,
-                    MusicId = music.Id,
-                    Music = music
-                };
-
-                await _unitOfWork.DbContext.AddAsync(history);
-                _unitOfWork.SaveChanges();
 
                 return music;
             }

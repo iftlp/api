@@ -77,7 +77,7 @@ namespace Shizima.WebAPI.Controllers
         /// <summary>
         /// Add a music entry to the database.
         /// </summary>
-        /// <param name="musicDto">The music information</param>
+        /// <param name="musicUpload">The music information and file</param>
         /// <param name="cancellationToken">The cancellationToken</param>
         /// <returns></returns>
         [Authorize]
