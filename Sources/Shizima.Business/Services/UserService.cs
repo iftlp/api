@@ -79,9 +79,16 @@ namespace Shizima.Business.Services
             if (user == null)
             {
                 _logger.LogError(ERROR_PREFIX + "GET_HISTORY: The user with token: {UserToken} doesn't exist.", userToken);
-                throw new ArgumentException($"{ERROR_PREFIX}GET_HISTORY: The user with token: {userToken} doesn't exist.");
+                
+                await CreateUserAsync(userToken, cancellationToken);
+                
+                user = await _unitOfWork.DbContext.Users.Where(u => u.Token == userToken).FirstOrDefaultAsync(cancellationToken);
+                if (user == null)
+                {
+                    _logger.LogError(ERROR_PREFIX + "GET_HISTORY: The user with token: {UserToken} failed to create.", userToken);
+                }
             }
-
+            
             var history = await _unitOfWork.DbContext.Histories
                 .Where(h => h.UserId == user.Id)
                 .Include(h => h.Music)

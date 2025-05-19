@@ -14,6 +14,7 @@ namespace Shizima.Business.Mappers
         {
             return new HistoryDto
             {
+                Id = history.Id,
                 RecognitionDate = history.RecognitionDate,
                 Music = history.Music.ToDto(),
             };
