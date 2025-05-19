@@ -13,10 +13,20 @@ namespace Shizima.ClientAPI.MinioClient
         public MinioService(IConfiguration configuration)
         {
             var endpoint = configuration["Minio:Endpoint"];
-            var accessKey = configuration["Minio:AccessKey"];
-            var secretKey = configuration["Minio:SecretKey"];
             var useSSL = bool.Parse(configuration["Minio:UseSSL"] ?? "true");
 
+            var accessKey = Environment.GetEnvironmentVariable("Minio__Access__Key");
+            if (string.IsNullOrEmpty(accessKey))
+            {
+                accessKey = configuration["Minio:AccessKey"];
+            }
+            
+            var secretKey = Environment.GetEnvironmentVariable("Minio__Secret__Key");
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                secretKey = configuration["Minio:SecretKey"];
+            }
+            
             _minioClient = new Minio.MinioClient()
                 .WithEndpoint(endpoint)
                 .WithCredentials(accessKey, secretKey);
