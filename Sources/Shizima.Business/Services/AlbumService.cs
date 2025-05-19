@@ -65,7 +65,12 @@ namespace Shizima.Business.Services
         public async Task<IEnumerable<Album>> GetAlbumsByArtistIdAsync(int artistId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Try to get albums for artist id: {Id}", artistId);
-            var albums = await _unitOfWork.DbContext.Albums.Where(a => a.ArtistId == artistId).ToListAsync(cancellationToken);
+            var albums = await _unitOfWork.DbContext.Albums
+                .Where(a => a.ArtistId == artistId)
+                .Include(a => a.Musics)
+                    .ThenInclude(m => m.Artists!)
+                .Include(a => a.Artist)
+                .ToListAsync(cancellationToken);
             if (albums == null)
             {
                 _logger.LogError(ERROR_PREFIX + "GET_BY_ID: The albums for artist id: {Id} not found.", artistId);

@@ -82,6 +82,43 @@ namespace Shizima.Business.Services
         public async Task<long> CreateMusicAsync(Music music, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Try to create music {Id}", music.Id);
+
+            if (music.Artists != null && music.Artists.Any())
+            {
+                var artistNames = music.Artists.Select(a => a.Id).ToList();
+
+                var existingArtists = await _unitOfWork.DbContext.Artists
+                    .Where(a => artistNames.Contains(a.Id))
+                    .ToListAsync(cancellationToken);
+
+                var existingArtistNames = existingArtists.Select(a => a.Id).ToHashSet();
+                
+                var finalArtists = new List<Artist>();
+                
+                finalArtists.AddRange(existingArtists);
+
+                var newArtists = music.Artists
+                    .Where(a => !existingArtistNames.Contains(a.Id))
+                    .ToList();
+
+                finalArtists.AddRange(newArtists);
+                
+                music.Artists = finalArtists;
+            }
+
+            var createdMusic = await _unitOfWork.DbContext.Musics.AddAsync(music, cancellationToken);
+            var result = await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
+
+            if (result == 0)
+            {
+                _logger.LogError("CREATION: The music creation for {Id} failed.", createdMusic.Entity.Id);
+                throw new ArgumentException($"CREATION: The music creation for {createdMusic.Entity.Id} failed.");
+            }
+
+            _logger.LogInformation("Success to create music {Id}", createdMusic.Entity.Id);
+            return createdMusic.Entity.Id;
+            /*
+            _logger.LogInformation("Try to create music {Id}", music.Id);
             var createdMusic = await _unitOfWork.DbContext.Musics.AddAsync(music, cancellationToken);
             var result = await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
             if (result == 0)
@@ -91,6 +128,7 @@ namespace Shizima.Business.Services
             }
             _logger.LogInformation("Success to create music {Id}", createdMusic.Entity.Id);
             return createdMusic.Entity.Id;
+            */
         }
         
         /// <summary>

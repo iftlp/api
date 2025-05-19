@@ -5,7 +5,7 @@
         /// <summary>
         /// The file to upload.
         /// </summary>
-        public IFormFile File { get; set; }
+        public IFormFile AudioFile { get; set; }
 
         /// <summary>
         /// The music informations.
