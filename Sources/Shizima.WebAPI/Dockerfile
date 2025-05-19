@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 ARG NUGET_FEED_URL="https://gitlab.isima.fr/api/v4/groups/11770/-/packages/nuget/index.json"
 ARG NUGET_FEED_NAME="gitlab.isima"
-ARG CI_JOB_TOKEN
+ARG NUGET_PASSWORD_2
 
 WORKDIR /src
 COPY ["Shizima.WebAPI/Shizima.WebAPI.csproj", "Shizima.WebAPI/"]
@@ -19,7 +19,7 @@ COPY ["Shizima.Dtos/Shizima.Dtos.csproj", "Shizima.Dtos/"]
 COPY ["Shizima.WebAPI/Migrations", "Shizima.WebAPI/Migrations"]
 COPY ["Shizima.MinioClient/Shizima.MinioClient.csproj", "Shizima.MinioClient/"]
 
-RUN dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
+RUN dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab+deploy-token-38 --password $NUGET_PASSWORD_2 --store-password-in-clear-text
 RUN dotnet restore "Shizima.WebAPI/Shizima.WebAPI.csproj"
 COPY . .
 WORKDIR "/src/Shizima.WebAPI"

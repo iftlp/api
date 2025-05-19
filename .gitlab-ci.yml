@@ -57,7 +57,7 @@ docker-push:
     - docker:dind
   script:
     - echo "$DOCKER_PASSWORD" | docker login $CI_REGISTRY -u $DOCKER_USERNAME --password-stdin
-    - docker build -f $PROJECT_PATH/Dockerfile -t $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --build-arg CI_JOB_TOKEN=${CI_JOB_TOKEN} ./Sources
+    - docker build -f $PROJECT_PATH/Dockerfile -t $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --build-arg NUGET_PASSWORD_2=$NUGET_PASSWORD_2 ./Sources
     - docker push $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
   only:
     - master
