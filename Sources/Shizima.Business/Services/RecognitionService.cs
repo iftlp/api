@@ -75,7 +75,7 @@ namespace Shizima.Business.Services
                 }
 
                 var music = await _unitOfWork.DbContext.Musics.Where(m => m.Id == resultList.First()!.TrackId)
-                    .Include(m => m.Album)
+                    .Include(m => m.Album.Artist)
                     .Include(m => m.Artists)
                     .FirstOrDefaultAsync(cancellationToken);
 
@@ -147,6 +147,7 @@ namespace Shizima.Business.Services
 
                 var music = await _unitOfWork.DbContext.Musics.Where(m => m.Id == resultList.First()!.TrackId)
                     .Include(m => m.Album)
+                    .ThenInclude(a => a.Artist)
                     .Include(m => m.Artists)
                     .FirstOrDefaultAsync(cancellationToken);
 

@@ -45,7 +45,7 @@ namespace Shizima.Business.Services
             _logger.LogInformation("Get music for id: {Id}.", id);
             var music = await _unitOfWork.DbContext.Musics
                 .Where(m => m.Id == id)
-                .Include(m => m.Album)
+                .Include(m => m.Album.Artist)
                 .Include(m => m.Artists)
                 .FirstOrDefaultAsync(cancellationToken);
             if (music == null)
@@ -68,7 +68,7 @@ namespace Shizima.Business.Services
         {
             _logger.LogInformation("Getting every musics entry.");
             var musics = await _unitOfWork.DbContext.Musics
-                .Include(m => m.Album)
+                .Include(m => m.Album.Artist)
                 .Include(m => m.Artists)
                 .ToListAsync(cancellationToken);
             return musics.ToPaginatedListAsync(pageIndex, pageSize, cancellationToken);

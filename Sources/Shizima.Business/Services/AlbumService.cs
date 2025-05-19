@@ -45,7 +45,8 @@ namespace Shizima.Business.Services
             var album = await _unitOfWork.DbContext.Albums
                 .Where(a => a.Id == id)
                 .Include(a => a.Musics)
-                .ThenInclude(m => m.Artists)
+                    .ThenInclude(m => m.Artists!)
+                .Include(a => a.Artist)
                 .FirstOrDefaultAsync(cancellationToken);
             if (album == null)
             {
