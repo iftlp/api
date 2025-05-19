@@ -92,8 +92,8 @@ namespace Shizima.WebAPI.Controllers
                 var audioSlug = Regex.Replace(musicUpload.Music.Title.ToLowerInvariant().Trim(), @"\s+", "-");
                 var audioFileName = MINIO_MUSIC_FOLDER_NAME + audioSlug + ".wav";
                 
-                await _minioService.UploadFileAsync("shizima", audioFileName, musicUpload.File);
-                var dataBytes = await musicUpload.File.ToBytes();
+                await _minioService.UploadFileAsync("shizima", audioFileName, musicUpload.AudioFile);
+                var dataBytes = await musicUpload.AudioFile.ToBytes();
                 var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(audioFileName), cancellationToken);
                 await _recognitionService.GenerateAudioFingerprintsAsync(musicId, dataBytes, cancellationToken);
             }
