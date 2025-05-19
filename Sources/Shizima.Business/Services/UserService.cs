@@ -91,9 +91,8 @@ namespace Shizima.Business.Services
             
             var history = await _unitOfWork.DbContext.Histories
                 .Where(h => h.UserId == user.Id)
-                .Include(h => h.Music)
-                .ThenInclude(m => m.Album)
-                .ThenInclude(a => a.Artist)
+                .Include(h => h.Music.Album.Artist)
+                .Include(h => h.Music.Artists)
                 .ToListAsync(cancellationToken);
 
             if (history == null)

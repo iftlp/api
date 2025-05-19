@@ -59,7 +59,7 @@ namespace Shizima.WebAPI.Controllers
         /// <returns>The Bearer token and it's expiration datetime (UTC)</returns>
         [Authorize]
         [HttpGet("refresh")]
-        public async Task<ActionResult<string>> RefreshTokenAsync(CancellationToken cancellationToken)
+        public ActionResult<string> RefreshToken(CancellationToken cancellationToken)
         {
             var userIdentityEmail = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                                ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
