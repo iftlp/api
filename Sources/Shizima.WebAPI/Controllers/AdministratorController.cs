@@ -25,7 +25,6 @@ namespace Shizima.WebAPI.Controllers
         /// <param name="userIdentity">The new administrator credentials (email/password).</param>
         /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>The Bearer token and it's expiration datetime (UTC)</returns>
-        [Authorize]
         [HttpPost]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
         public async Task<ActionResult> CreateAdministrator([FromBody] UserIdentity userIdentity, CancellationToken cancellationToken = default)
