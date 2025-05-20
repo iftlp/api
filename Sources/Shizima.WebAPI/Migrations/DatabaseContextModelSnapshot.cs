@@ -39,20 +39,20 @@ namespace Shizima.WebAPI.Migrations
 
             modelBuilder.Entity("Shizima.Entities.Administrator", b =>
                 {
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Email");
 
                     b.ToTable("Administrators");
                 });

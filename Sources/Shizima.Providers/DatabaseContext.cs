@@ -28,6 +28,7 @@ namespace Shizima.Providers
             InitializeAlbumsMusicsRelation(modelBuilder);
             InitializeHistoryRelations(modelBuilder);
             InitializeFingerprintRelations(modelBuilder);
+            InitializeAdministratorKey(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
@@ -57,6 +58,11 @@ namespace Shizima.Providers
             modelBuilder.Entity<Music>().HasMany(m => m.Fingerprints)
                                         .WithOne()
                                         .HasForeignKey(f => f.MusicId);
+        }
+
+        private static void InitializeAdministratorKey(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Administrator>().HasKey(a => a.Email);
         }
     }
 }
