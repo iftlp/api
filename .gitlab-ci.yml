@@ -15,6 +15,7 @@ variables:
 
 before_script:
   - dotnet --version
+  - dotnet nuget locals all --clear
   - dotnet nuget add source $NUGET_FEED_URL --name $NUGET_FEED_NAME --username gitlab+deploy-token-38 --password $NUGET_PASSWORD_2 --store-password-in-clear-text
 
 build:
