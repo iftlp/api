@@ -90,9 +90,8 @@ namespace Shizima.WebAPI.Controllers
                 var coverSlug = Regex.Replace(albumUpload.Album.Title.ToLowerInvariant().Trim(), @"\s+", "-");
                 var coverFileName = MINIO_COVER_FOLDER_NAME + coverSlug + ".png";
 
-                await _minioService.UploadFileAsync("shizima", coverFileName, albumUpload.Cover);
-
                 await _albumService.CreateAlbumAsync(albumUpload.Album.ToEntity(coverFileName), cancellationToken);
+                await _minioService.UploadFileAsync("shizima", coverFileName, albumUpload.Cover);
             }
             catch (ArgumentException e)
             {
@@ -106,17 +105,21 @@ namespace Shizima.WebAPI.Controllers
         /// Update an album entry of the database.
         /// </summary>
         /// <param name="id">The id of the album to update</param>
-        /// <param name="albumDto">The album information</param>
+        /// <param name="albumUpload">The album information</param>
         /// <param name="cancellationToken">The cancellationToken</param>
         /// <returns></returns>
         [Authorize]
         [HttpPut("{id:int}", Name = "Update an album entry of the database.")]
         [ProducesResponseType<IActionResult>(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateAlbumAsync([FromRoute] int id, [FromBody] AlbumDto albumDto, CancellationToken cancellationToken = default)
+        public async Task<ActionResult> UpdateAlbumAsync([FromRoute]int id, [FromForm]AlbumUploadRequestDto albumUpload, CancellationToken cancellationToken = default)
         {
             try
             {
-                await _albumService.UpdateAlbumAsync(id, albumDto.ToEntity(), cancellationToken);
+                var coverSlug = Regex.Replace(albumUpload.Album.Title.ToLowerInvariant().Trim(), @"\s+", "-");
+                var coverFileName = MINIO_COVER_FOLDER_NAME + coverSlug + ".png";
+
+                await _albumService.UpdateAlbumAsync(id, albumUpload.Album.ToEntity(coverFileName), cancellationToken);
+                await _minioService.UploadFileAsync("shizima", coverFileName, albumUpload.Cover);
             }
             catch (ArgumentException e)
             {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shizima.Business.Extensions.Collections;
+using Shizima.ClientAPI.MinioClient;
 using Shizima.Entities;
 using Shizima.Providers;
 
@@ -12,6 +13,11 @@ namespace Shizima.Business.Services
         /// The logger
         /// </summary>
         private readonly ILogger<MusicService> _logger;
+
+        /// <summary>
+        /// The minio service
+        /// </summary>
+        private readonly MinioService _minioService;
 
         /// <summary>
         /// The database context
@@ -28,10 +34,11 @@ namespace Shizima.Business.Services
         /// </summary>
         /// <param name="unitOfWork">The database context instance</param>
         /// <param name="logger">The logger instance</param>
-        public MusicService(UnitOfWork unitOfWork, ILogger<MusicService> logger)
+        public MusicService(UnitOfWork unitOfWork, ILogger<MusicService> logger, MinioService minioService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger;
+            _minioService = minioService;
         }
 
         /// <summary>
@@ -116,19 +123,8 @@ namespace Shizima.Business.Services
             }
 
             _logger.LogInformation("Success to create music {Id}", createdMusic.Entity.Id);
+
             return createdMusic.Entity.Id;
-            /*
-            _logger.LogInformation("Try to create music {Id}", music.Id);
-            var createdMusic = await _unitOfWork.DbContext.Musics.AddAsync(music, cancellationToken);
-            var result = await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
-            if (result == 0)
-            {
-                _logger.LogError(ERROR_PREFIX + "CREATION: The music creation for {Id} failed.", createdMusic.Entity.Id);
-                throw new ArgumentException($"{ERROR_PREFIX}CREATION: The music creation for {createdMusic.Entity.Id} failed.");
-            }
-            _logger.LogInformation("Success to create music {Id}", createdMusic.Entity.Id);
-            return createdMusic.Entity.Id;
-            */
         }
         
         /// <summary>
@@ -174,6 +170,12 @@ namespace Shizima.Business.Services
                 _logger.LogError(ERROR_PREFIX + "DELETE: The music with id: {Id} does not exist.", id);
                 throw new ArgumentException($"{ERROR_PREFIX}DELETE: The music with id: {id} does not exist.");
             }
+
+            if (musicToDelete.FilePath != null)
+            {
+                await _minioService.DeleteFileAsync("shizima", musicToDelete.FilePath);
+            }
+
             await _unitOfWork.DbContext.Musics.Where(m => m.Id == id).ExecuteDeleteAsync(cancellationToken);
             await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
         }

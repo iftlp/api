@@ -94,7 +94,9 @@ namespace Shizima.WebAPI.Controllers
                 
                 await _minioService.UploadFileAsync("shizima", audioFileName, musicUpload.AudioFile);
                 var dataBytes = await musicUpload.AudioFile.ToBytes();
+                
                 var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(audioFileName), cancellationToken);
+                
                 await _recognitionService.GenerateAudioFingerprintsAsync(musicId, dataBytes, cancellationToken);
             }
             catch (ArgumentException e)
