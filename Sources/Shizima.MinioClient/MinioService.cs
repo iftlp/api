@@ -65,5 +65,21 @@ namespace Shizima.ClientAPI.MinioClient
                 throw new ApplicationException("Minio upload failed: " + ex.Message, ex);
             }
         }
+
+        public async Task DeleteFileAsync(string bucketName, string objectName)
+        {
+            try
+            {
+                var removeObjectArgs = new RemoveObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(objectName);
+
+                await _minioClient.RemoveObjectAsync(removeObjectArgs);
+            }
+            catch (MinioException ex)
+            {
+                throw new ApplicationException("Minio delete failed: " + ex.Message, ex);
+            }
+        }
     }
 }

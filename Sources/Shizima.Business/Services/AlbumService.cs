@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shizima.ClientAPI.MinioClient;
 using Shizima.Entities;
 using Shizima.Providers;
 
@@ -11,6 +12,11 @@ namespace Shizima.Business.Services
         /// The logger
         /// </summary>
         private readonly ILogger<AlbumService> _logger;
+
+        /// <summary>
+        /// The minio service
+        /// </summary>
+        private readonly MinioService _minioService;
 
         /// <summary>
         /// The database context
@@ -27,10 +33,11 @@ namespace Shizima.Business.Services
         /// </summary>
         /// <param name="unitOfWork">The database context instance</param>
         /// <param name="logger">The logger instance</param>
-        public AlbumService(UnitOfWork unitOfWork, ILogger<AlbumService> logger)
+        public AlbumService(UnitOfWork unitOfWork, ILogger<AlbumService> logger, MinioService minioService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger;
+            _minioService = minioService;
         }
         
         /// <summary>
@@ -113,6 +120,11 @@ namespace Shizima.Business.Services
                 throw new ArgumentException($"{ERROR_PREFIX}UPDATE: The album with id: {id} does not exist.");
             }
             
+            if (oldAlbum.Cover != null)
+            {
+                await _minioService.DeleteFileAsync("shizima", oldAlbum.Cover);
+            }
+
             oldAlbum.Title = album.Title;
             oldAlbum.Cover = album.Cover;
             oldAlbum.Musics = album.Musics;
@@ -134,12 +146,27 @@ namespace Shizima.Business.Services
         public async Task DeleteAlbumAsync(int id, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Try to update album {Id}", id);
-            var albumToDelete = await _unitOfWork.DbContext.Albums.Where(m => m.Id == id).FirstOrDefaultAsync(cancellationToken);
+            var albumToDelete = await _unitOfWork.DbContext.Albums.Where(a => a.Id == id).Include(a => a.Musics).FirstOrDefaultAsync(cancellationToken);
             if (albumToDelete == null)
             {
                 _logger.LogError(ERROR_PREFIX + "DELETE: The album with id: {Id} does not exist.", id);
                 throw new ArgumentException($"{ERROR_PREFIX}DELETE: The album with id: {id} does not exist.");
             }
+            if (albumToDelete.Cover != null)
+            {
+                await _minioService.DeleteFileAsync("shizima", albumToDelete.Cover);
+            }
+            if (albumToDelete.Musics != null)
+            {
+                foreach (var music in albumToDelete.Musics)
+                {
+                    if (music.FilePath != null)
+                    {
+                        await _minioService.DeleteFileAsync("shizima", music.FilePath);
+                    }
+                }
+            }
+
             await _unitOfWork.DbContext.Albums.Where(m => m.Id == id).ExecuteDeleteAsync(cancellationToken);
             await _unitOfWork.DbContext.SaveChangesAsync(cancellationToken);
         }
