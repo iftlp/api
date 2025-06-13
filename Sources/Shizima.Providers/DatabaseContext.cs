@@ -14,6 +14,7 @@ namespace Shizima.Providers
         public DbSet<User> Users { get; set; }
         public DbSet<History> Histories { get; set; }
         public DbSet<DatabaseFingerprint> Fingerprints { get; set; }
+        public DbSet<JsonFingerprint> JsonFingerprints { get; set; }
         public DbSet<Administrator> Administrators { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
@@ -58,6 +59,10 @@ namespace Shizima.Providers
             modelBuilder.Entity<Music>().HasMany(m => m.Fingerprints)
                                         .WithOne()
                                         .HasForeignKey(f => f.MusicId);
+
+            modelBuilder.Entity<Music>().HasMany(m => m.JsonFingerprints)
+                                       .WithOne()
+                                       .HasForeignKey(f => f.MusicId);
         }
 
         private static void InitializeAdministratorKey(ModelBuilder modelBuilder)

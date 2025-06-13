@@ -46,5 +46,10 @@ namespace Shizima.Entities
         /// Gets or sets the music's fingerprints
         /// </summary> 
         public ICollection<DatabaseFingerprint>? Fingerprints { get; set; }
+
+        /// <summary>
+        /// Gets or sets the music's fingerprints
+        /// </summary> 
+        public ICollection<JsonFingerprint>? JsonFingerprints { get; set; }
     }
 }

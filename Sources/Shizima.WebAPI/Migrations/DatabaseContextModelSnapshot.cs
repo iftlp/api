@@ -151,6 +151,28 @@ namespace Shizima.WebAPI.Migrations
                     b.ToTable("Histories");
                 });
 
+            modelBuilder.Entity("Shizima.Entities.JsonFingerprint", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("MusicId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MusicId");
+
+                    b.ToTable("JsonFingerprints");
+                });
+
             modelBuilder.Entity("Shizima.Entities.Music", b =>
                 {
                     b.Property<long>("Id")
@@ -252,6 +274,15 @@ namespace Shizima.WebAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Shizima.Entities.JsonFingerprint", b =>
+                {
+                    b.HasOne("Shizima.Entities.Music", null)
+                        .WithMany("JsonFingerprints")
+                        .HasForeignKey("MusicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Shizima.Entities.Music", b =>
                 {
                     b.HasOne("Shizima.Entities.Album", "Album")
@@ -273,6 +304,8 @@ namespace Shizima.WebAPI.Migrations
                     b.Navigation("Fingerprints");
 
                     b.Navigation("Histories");
+
+                    b.Navigation("JsonFingerprints");
                 });
 
             modelBuilder.Entity("Shizima.Entities.User", b =>

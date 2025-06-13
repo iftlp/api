@@ -24,9 +24,6 @@ build:
   script:
     - dotnet restore $PROJECT_PATH
     - dotnet build $PROJECT_PATH --no-restore
-  tags:
-    - shizima-dotnet
-
 
 sonarqube-check:
   image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -52,8 +49,6 @@ sonarqube-check:
       - "dotnet build"
       - "dotnet sonarscanner end /d:sonar.login=\"$SONAR_TOKEN\""
   allow_failure: true
-  tags:
-    - shizima-dotnet
   only:
     - master
 
@@ -61,14 +56,11 @@ docker-push:
   before_script: []
   image: docker:latest
   stage: docker-push
-  #services:
-  #  - docker:dind
-  services: []
+  services:
+    - docker:dind
   script:
     - echo "$DOCKER_PASSWORD" | docker login $CI_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - docker build -f $PROJECT_PATH/Dockerfile -t $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --build-arg NUGET_PASSWORD_2=$NUGET_PASSWORD_2 ./Sources
     - docker push $CI_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-  tags:
-    - shizima-dotnet
   only:
     - master
