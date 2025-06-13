@@ -8,7 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
+    <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="Shizima.CoreLib" Version="1.0.17796" />
+    <PackageReference Include="SoundFingerprinting" Version="12.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup>

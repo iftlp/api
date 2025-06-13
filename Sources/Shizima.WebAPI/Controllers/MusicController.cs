@@ -83,7 +83,7 @@ namespace Shizima.WebAPI.Controllers
         /// <param name="cancellationToken">The cancellationToken</param>
         /// <returns></returns>
         [Authorize]
-        [HttpPost(Name = "Add a music entry to the database.")]
+        [HttpPost("corelib", Name = "Add a music entry to the database.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> CreateMusicAsync([FromForm]MusicUploadRequestDto musicUpload, CancellationToken cancellationToken = default)
         {
@@ -96,8 +96,8 @@ namespace Shizima.WebAPI.Controllers
                 var dataBytes = await musicUpload.AudioFile.ToBytes();
                 
                 var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(audioFileName), cancellationToken);
-                
-                await _recognitionService.GenerateAudioFingerprintsAsync(musicId, dataBytes, cancellationToken);
+
+                await _recognitionService.GenerateAudioFingerprintsAsync(musicId, dataBytes, cancellationToken);               
             }
             catch (ArgumentException e)
             {
@@ -107,6 +107,54 @@ namespace Shizima.WebAPI.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Add a music entry to the database.
+        /// </summary>
+        /// <param name="musicUpload">The music information and file</param>
+        /// <param name="cancellationToken">The cancellationToken</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost(Name = "Route to add a music entry to the database. Using external lib")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> NewCreateMusicAsync([FromForm] MusicUploadRequestDto musicUpload, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var audioSlug = Regex.Replace(musicUpload.Music.Title.ToLowerInvariant().Trim(), @"\s+", "-");
+                var audioFileName = MINIO_MUSIC_FOLDER_NAME + audioSlug + ".wav";
+
+                await _minioService.UploadFileAsync("shizima", audioFileName, musicUpload.AudioFile);
+                var dataBytes = await musicUpload.AudioFile.ToBytes();
+
+                var musicId = await _musicService.CreateMusicAsync(musicUpload.Music.ToEntity(audioFileName), cancellationToken);
+
+                if (musicUpload.AudioFile == null)
+                {
+                    return new EmptyResult();
+                }
+
+                var tempFile = Path.GetTempFileName();
+
+                if (tempFile == null)
+                {
+                    return new EmptyResult();
+                }
+
+                await using (var stream = System.IO.File.Create(tempFile))
+                {
+                    await musicUpload.AudioFile.CopyToAsync(stream);
+                }
+
+                await _recognitionService.WithExtLib_GenerateAudioFingerprintsAsync(musicId, tempFile, cancellationToken);
+            }
+            catch (ArgumentException e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+
+            return new OkResult();
+        }
+        
         /// <summary>
         /// Update a music entry of the database.
         /// </summary>
