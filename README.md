@@ -4,6 +4,23 @@ _This API is deployed on our personnal server. It's easier to use, because some 
 
 Deployed version of : [ShizimaWebAPI](https://shizima-api.baptiiiste.com/swagger)
 
+## Run the API in Docker
+
+**Prerequisites:**
+
+- _PostgresSQL database_
+
+- _MinioServer_
+
+You need to pull this docker image: `docker.isima.fr/axdelafuen/shizima_webapi@latest`
+
+Then setup some env variables:
+
+- `ConnectionStrings__DefaultConnection` : "Host=localhost;Port=5432;Database=AppDBName;Username=username;Password=password"
+- `Minio__Access__Key` : "accessKey"
+- `Minio__Secret__Key` : "secretKey"
+
+## Run the API locally
 
 **Prerequisites:**
 
@@ -13,7 +30,6 @@ Deployed version of : [ShizimaWebAPI](https://shizima-api.baptiiiste.com/swagger
 
 - _MinioServer_
 
-## Getting started
 
 Clone repo:
 
@@ -31,7 +47,7 @@ Edit config to fit with your SQL Server database & Minio Server:
 "Minio": {
   "Endpoint": "url.to.your.minioserver",
   "AccessKey": "accessKey",
-  "SecretKey": "sevretKey",
+  "SecretKey": "secretKey",
   "UseSSL": "true"
 },
 ```
