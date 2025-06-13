@@ -42,6 +42,8 @@ You'll need also to need to subscribe to our NuGet feed to get the librairies we
 dotnet nuget add source "https://gitlab.isima.fr/api/v4/groups/11770/-/packages/nuget/index.json" --name "gitlab.isima" --username youtGitLabUsername --password youtGitLabAccessToken 
 ```
 
+Finnaly, you'll have to migrate our databse. Please refer to the document `migrations.md`.
+
 Then, Restore & Build:
 
 ```shell
