@@ -12,7 +12,7 @@ Deployed version of : [ShizimaWebAPI](https://shizima-api.baptiiiste.com/swagger
 
 - _MinioServer_
 
-You need to pull this docker image: `docker.isima.fr/axdelafuen/shizima_webapi@latest`
+You need to pull this docker image: `docker.isima.fr/axdelafuen/shizima_webapi@latest`. (You can also build the image your self, the Dockerfile is in `./Sources/Shizima.WebAPI/Dockerfile`)
 
 Then setup some env variables:
 
